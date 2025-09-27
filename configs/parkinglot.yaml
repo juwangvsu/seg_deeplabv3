@@ -1,0 +1,36 @@
+# configs/parkinglot.yaml
+seed: 1337
+
+data:
+  root: tiny-parking-dataset/
+  train_images: train/images
+  train_masks: train/masks
+  val_images: val/images
+  val_masks: val/masks
+
+model:
+  name: deeplabv3_resnet50
+  num_classes: 5
+  pretrained_backbone: true
+
+train:
+  input_size: 768       # square crop
+  lr: 0.0006
+  weight_decay: 0.01
+  batch_size: 4
+  num_workers: 8
+  max_epochs: 60
+  amp: true
+  ignore_index: 255
+  resume: null          # path to checkpoint to resume
+  output_dir: outputs
+  save_every: 5         # epochs
+
+augment:
+  min_scale: 0.5
+  max_scale: 1.5
+  hflip_prob: 0.5
+  color_jitter: [0.2, 0.2, 0.2, 0.1]  # brightness, contrast, saturation, hue
+
+eval:
+  input_size: 1024      # long side resize for evaluation
