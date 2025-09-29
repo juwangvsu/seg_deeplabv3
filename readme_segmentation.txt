@@ -14,11 +14,14 @@ python3 test_seg3.py --input 000010.png   --output result_overlay.png   --colore
 
 python3 test_seg4.py --data_dir data/kitti_object_100
 
-
    25  python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_060.ckpt 
    30  python3 train.py --config configs/parkinglot.yaml
 	python3 train.py --config configs/apgdata.yaml
    31  python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_010.ckpt 
+	python3 verify_label.py --masks data/apgdata/masks
+
+status:
+	apgdata training run works now. result to be checked
 
 train apgdata issue:
 	    scaler.scale(loss).backward()
