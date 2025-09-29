@@ -14,6 +14,26 @@ python3 test_seg3.py --input 000010.png   --output result_overlay.png   --colore
 
 python3 test_seg4.py --data_dir data/kitti_object_100
 
+
+   25  python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_060.ckpt 
+   30  python3 train.py --config configs/parkinglot.yaml
+	python3 train.py --config configs/apgdata.yaml
+   31  python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_010.ckpt 
+
+train apgdata issue:
+	    scaler.scale(loss).backward()
+  File "/usr/local/lib/python3.10/dist-packages/torch/amp/grad_scaler.py", line 214, in scale
+    return outputs * self._scale.to(device=outputs.device, non_blocking=True)
+torch.AcceleratorError: CUDA error: device-side assert triggered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+cause:
+	That CUDA assert almost always means a label in your mask is outside [0..num_classes-1] and not equal to ignore_index. For your config (num_classes: 5, ignore_index: 255), any pixel not in {0,1,2,3,4,255} will crash CrossEntropyLoss on GPU.
+
+	https://chatgpt.com/share/e/68da0dc3-527c-800c-a6f3-b1a6552f221d
+
 -------------9/27/25 loading stock param to local model -----
 issue:
 	Missing key(s) in state_dict: "aux_classifier.0.weight", "aux_classifier.1.weight", "aux_classifier.1.bias", "aux_classifier.1.running_mean", "aux_classifier.1.running_var", "aux_classifier.4.weight", "aux_classifier.4.bias".
@@ -21,9 +41,11 @@ issue:
 fix:
 	deeplabv3 has an aux_classifier head. when loading an empty model, aux 
 	is not loaded. when loading a pretrained model, it usually have aux head.
-	relevant aug when loading: model = torchvision.models.segmentation.deeplabv3_resnet50(
-        aux_loss=False
-    )
+	relevant aug when loading: model.py
+	model = torchvision.models.segmentation.deeplabv3_resnet50(
+        aux_loss=True
+    	)
+	this will create a model with aux_classifier
 
 ---------------------deeplabv3 local train -----------------------------------
 
@@ -56,7 +78,8 @@ Class map:
 docker build -t parking-seg:cuda12.1 -f Dockerfile .
 
 docker:
-	docker run --gpus all -t -d   -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg parking-seg:cuda12.1  bash
+	cd ~/Documents/parking-seg-deeplabv3
+	docker run --gpus all -t -d --shm-size=1g  -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg parking-seg:cuda12.1  bash
 
 Train:
 	python train.py --config configs/parkinglot.yaml

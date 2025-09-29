@@ -47,7 +47,7 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
     model = create_deeplabv3_model(model_type)
     print('xxx ', model)
     print('yyy ', model.state_dict().keys())
-    exit(0)
+    #exit(0)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     if save_ckpt:
         torch.save(model.state_dict(), 'model_deeplabv3_pretrained.pt')
