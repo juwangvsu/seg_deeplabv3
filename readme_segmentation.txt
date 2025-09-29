@@ -12,17 +12,24 @@ use pretrained model:
 
 python3 test_seg3.py --input 000010.png   --output result_overlay.png   --colored result_colored_mask.png
 
-python3 test_seg4.py --data_dir data/kitti_object_100
-
-   25  python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_060.ckpt 
-   30  python3 train.py --config configs/parkinglot.yaml
+@alien3:host
+@deeplabseg:
+	python3 test_seg4.py --data_dir data/apgdata
+		use pretrained stock weights. result saved in 
+		data_dir: masks, overlay, colored_masks
+		chown -R stuent data/apgdata
+		~/Documents/parking-seg-deeplabv3/data/apgdata/masks$ ../../../rename_mask.sh 
+			rename masks filename
+		python3 verify_label.py --masks data/apgdata/masks
+     	python3 train.py --config configs/parkinglot.yaml
 	python3 train.py --config configs/apgdata.yaml
-   31  python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_010.ckpt 
+     	python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_010.ckpt 
 	python3 verify_label.py --masks data/apgdata/masks
 
 status:
 	apgdata training run works now. result to be checked
-
+	python3 verify_label.py --masks data/apgdata/masks
+		some not valid, should not happen since using stock weights
 train apgdata issue:
 	    scaler.scale(loss).backward()
   File "/usr/local/lib/python3.10/dist-packages/torch/amp/grad_scaler.py", line 214, in scale
@@ -83,7 +90,7 @@ docker build -t parking-seg:cuda12.1 -f Dockerfile .
 docker:
 	cd ~/Documents/parking-seg-deeplabv3
 	docker run --gpus all -t -d --shm-size=1g  -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg parking-seg:cuda12.1  bash
-
+		pip install transformers==4.56.2
 Train:
 	python train.py --config configs/parkinglot.yaml
 

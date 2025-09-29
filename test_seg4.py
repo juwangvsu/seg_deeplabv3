@@ -149,7 +149,7 @@ def main():
     root = Path(args.data_dir).expanduser().resolve()
     images_dir = root / "images"
     overlay_dir = root / "overlay"
-    colored_dir = root / "colored_mask"
+    colored_dir = root / "colored_masks"
     masks_dir = root / "masks"
     for d in (overlay_dir, colored_dir, masks_dir):
         d.mkdir(parents=True, exist_ok=True)
