@@ -10,7 +10,7 @@ data:
 
 model:
   name: deeplabv3_resnet50
-  num_classes: 5
+  num_classes: 21 
   pretrained_backbone: true
 
 train:
@@ -19,7 +19,7 @@ train:
   weight_decay: 0.01
   batch_size: 4
   num_workers: 8
-  max_epochs: 60
+  max_epochs: 10
   amp: true
   ignore_index: 255
   resume: null          # path to checkpoint to resume

@@ -6,20 +6,31 @@ docker:
 	jwang3vsu/parking-seg:cuda12.1
 	container:
 		deeplabseg
----------------------------------------------------------------------------------------
-# Parking Lot Segmentation (DeepLabv3)
+
+--------------9/27/25 test stock deeplabv3 ----------------------
+use pretrained model:
+
+python3 test_seg3.py --input 000010.png   --output result_overlay.png   --colored result_colored_mask.png
+
+python3 test_seg4.py --data_dir data/kitti_object_100
+
+-------------9/27/25 loading stock param to local model -----
+issue:
+	Missing key(s) in state_dict: "aux_classifier.0.weight", "aux_classifier.1.weight", "aux_classifier.1.bias", "aux_classifier.1.running_mean", "aux_classifier.1.running_var", "aux_classifier.4.weight", "aux_classifier.4.bias".
+
+fix:
+	deeplabv3 has an aux_classifier head. when loading an empty model, aux 
+	is not loaded. when loading a pretrained model, it usually have aux head.
+	relevant aug when loading: model = torchvision.models.segmentation.deeplabv3_resnet50(
+        aux_loss=False
+    )
+
+---------------------deeplabv3 local train -----------------------------------
 
 Train and evaluate **DeepLabv3 (ResNet-50)** for semantic segmentation on a parking-lot dataset
 (classes: pavement, person, car, tree; plus background).
 
-- Host OS: **Ubuntu 22.04**
-- GPU: **NVIDIA RTX 4090**
-- Container: CUDA 12.1 runtime + PyTorch 2.x (CUDA 12.1 wheels)
 - Image resolution: 1232 × 1028 (we train with random scales/crops around this size)
-
-## Dataset layout
-
-Place your dataset under `data/` (you can mount it into the container). Expected structure:
 
 ```
 data/
@@ -32,55 +43,32 @@ data/
   test/
     images/
     masks/    # optional; if omitted, eval runs only on val
-```
-
-- File names in `images/` and `masks/` must match (e.g., `0001.png` ↔ `0001.png`).
+  File names in `images/` and `masks/` must match
 - Mask pixel values are class IDs in **[0..4]** with `255` as ignore label (optional).
 
-### Class map
+Class map:
+	0: background
+	1: pavement
+	2: person
+	3: car
+	4: tree
 
-```
-0: background
-1: pavement
-2: person
-3: car
-4: tree
-```
-
-If you already encode background as 0 and the four classes as 1–4, you’re good. Otherwise,
-adapt `configs/parkinglot.yaml` (the `num_classes` and `class_names` fields) and/or preprocess masks.
-
-## Quick start
-
-### 1) Build the Docker image
-```bash
 docker build -t parking-seg:cuda12.1 -f Dockerfile .
-```
 
-1.5)
+docker:
 	docker run --gpus all -t -d   -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg parking-seg:cuda12.1  bash
 
-### 2) Train
-Mount your dataset and an output directory:
-```bash
-docker run --gpus all --rm -it   -v $PWD/data:/workspace/data   -v $PWD/outputs:/workspace/outputs   parking-seg:cuda12.1   python train.py --config configs/parkinglot.yaml
-```
+Train:
+	python train.py --config configs/parkinglot.yaml
 
-### 3) Evaluate
-```bash
-docker run --gpus all --rm -it   -v $PWD/data:/workspace/data   -v $PWD/outputs:/workspace/outputs   parking-seg:cuda12.1   python eval.py --config configs/parkinglot.yaml --checkpoint outputs/latest.ckpt
-```
+Evaluate:
+	python eval.py --config configs/parkinglot.yaml --checkpoint outputs/latest.ckpt
 
-### 4) Predict on a folder of images (optional)
-```bash
-docker run --gpus all --rm -it   -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs   parking-seg:cuda12.1   python scripts/predict_folder.py --checkpoint outputs/latest.ckpt --input_dir samples --output_dir outputs/preds
-```
+Predict:
+	python3 predict_folder.py --checkpoint outputs/latest.ckpt --input_dir data/apgdata/images --output_dir outputs/apgdata/preds
+
 visualize:
-python scripts/visualize.py \
-  --images data/train/images \
-  --masks  data/train/masks \
-  --output_dir outputs/vis_train \
-  --legend --alpha 0.5
+	python3 visualize.py --images data/apgdata/images   --masks  outputs/apgdata/preds --output_dir outputs/vis_train2   --legend --alpha 0.5 --maskpref mask
 
 ## Config knobs (see `configs/parkinglot.yaml`)
 - `num_classes`: 5 (background + 4 classes)
@@ -88,13 +76,3 @@ python scripts/visualize.py \
 - `batch_size`: default 4 (fits 24GB+; adjust for your GPU/VRAM)
 - `lr`: default 6e-4 (AdamW)
 - `max_epochs`: default 60
-- `ignore_index`: 255
-
-## Notes
-- Uses mixed precision (AMP) by default.
-- SyncBN disabled by default for single-GPU; can be enabled for multi-GPU (DDP not wired here to keep it simple).
-- If masks look ragged on tree branches, consider increasing `input_size` or adding a boundary loss (left as an exercise).
-
----
-
-**Enjoy!**

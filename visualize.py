@@ -78,6 +78,7 @@ def main():
     ap = argparse.ArgumentParser(description="Visualize segmentation masks over images with a color legend.")
     ap.add_argument("--images", type=str, required=True, help="Path to images directory")
     ap.add_argument("--masks", type=str, required=True, help="Path to masks directory (IDs)")
+    ap.add_argument("--maskpref", type=str, default="", help="Path to masks directory (IDs)")
     ap.add_argument("--output_dir", type=str, required=True, help="Where to save overlays")
     ap.add_argument("--alpha", type=float, default=0.5, help="Mask overlay opacity")
     ap.add_argument("--legend", action="store_true", help="Append a legend below the image")
@@ -103,7 +104,11 @@ def main():
 
     for p in img_paths:
         name = os.path.basename(p)
-        mask_p = os.path.join(args.masks, os.path.splitext(name)[0] + ".png")
+        if args.maskpref=="":
+            mask_p = os.path.join(args.masks, os.path.splitext(name)[0] + ".png")
+        else:
+            mask_p = os.path.join(args.masks, os.path.splitext(name)[0] +"_"+args.maskpref+ ".png")
+        print('xxx mask fn ', mask_p)
         if not os.path.isfile(mask_p):
             print(f"[warn] Mask not found for {name}; skipping")
             continue
