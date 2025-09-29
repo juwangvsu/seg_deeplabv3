@@ -136,6 +136,7 @@ def main():
         description="Batch semantic segmentation (HF Transformers) with labeled overlays and raw masks."
     )
     p.add_argument("--data_dir", required=True, help="Data root dir containing an 'images' subfolder.")
+    p.add_argument("--out_dir", default="outputs/segformer", help="Data dir output subfolder.")
     p.add_argument("--input", default="", help="Optional single image name or path. If omitted, process all images in <data_dir>/images.")
     p.add_argument("--model", default="nvidia/segformer-b0-finetuned-ade-512-512",
                    help="HF model repo id for semantic segmentation.")
@@ -147,10 +148,11 @@ def main():
     args = p.parse_args()
 
     root = Path(args.data_dir).expanduser().resolve()
+    out_root = Path(args.out_dir).expanduser().resolve()
     images_dir = root / "images"
-    overlay_dir = root / "overlay"
-    colored_dir = root / "colored_masks"
-    masks_dir = root / "masks"
+    overlay_dir = out_root / "overlay"
+    colored_dir = out_root / "colored_masks"
+    masks_dir = out_root / "masks"
     for d in (overlay_dir, colored_dir, masks_dir):
         d.mkdir(parents=True, exist_ok=True)
 

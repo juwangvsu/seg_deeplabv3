@@ -9,23 +9,26 @@ docker:
 
 --------------9/27/25 test stock deeplabv3 ----------------------
 use pretrained model:
-
-python3 test_seg3.py --input 000010.png   --output result_overlay.png   --colored result_colored_mask.png
-
 @alien3:host
 @deeplabseg:
-	python3 test_seg4.py --data_dir data/apgdata
-		use pretrained stock weights. result saved in 
-		data_dir: masks, overlay, colored_masks
-		chown -R stuent data/apgdata
-		~/Documents/parking-seg-deeplabv3/data/apgdata/masks$ ../../../rename_mask.sh 
-			rename masks filename
-		python3 verify_label.py --masks data/apgdata/masks
+	python3 predict_deeplabv3.py --load_ckpt --ckptfn model_deeplabv3_pretrained.pt --output_dir outputs/tmp2
+		load stock or local deeplabv3 parameters, predict result saved
+		input dir data/apgdata/images
+ 	python3 verify_label.py --masks outputs/tmp2/masks/
+		good.
+	chown -R stuent data/apgdata
+	~/Documents/parking-seg-deeplabv3/data/apgdata/masks$ ../../../rename_mask.sh 
+		rename masks filename
      	python3 train.py --config configs/parkinglot.yaml
 	python3 train.py --config configs/apgdata.yaml
-     	python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_010.ckpt 
+
 	python3 verify_label.py --masks data/apgdata/masks
 
+segformer:
+        python3 test_seg4.py --data_dir data/apgdata --out_dir outputs/segformer
+        	use nvidia/segformer-b0-finetuned-ade-512-512 not deeplabv3.
+		result saved in 
+			data_dir: masks, overlay, colored_masks
 status:
 	apgdata training run works now. result to be checked
 	python3 verify_label.py --masks data/apgdata/masks

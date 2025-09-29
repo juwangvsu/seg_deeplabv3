@@ -5,6 +5,8 @@ import os
 import argparse
 import numpy as np
 # load stock pretrained and dump to local file deepv3 resnet50
+# --load_ckpt load a local pt file, this override the default one
+# --save_ckpt save to a local pt file
 
 def create_deeplabv3_model(model_type: str):
     """Loads a pretrained DeepLabV3 model with the specified backbone."""
@@ -50,7 +52,9 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
     #exit(0)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     if save_ckpt:
-        torch.save(model.state_dict(), 'model_deeplabv3_pretrained.pt')
+        ckpt={}
+        ckpt['model']=model.state_dict()
+        torch.save(ckpt, 'model_deeplabv3_pretrained.pt')
     if load_ckpt:
         ckpt = torch.load(ckptfn, map_location=device, weights_only=False)
         print('xxx ckpt', ckpt)
@@ -101,7 +105,7 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
 
                 raw_mask_image = Image.fromarray(raw_mask_array_squeezed).resize(original_size, Image.NEAREST)
                 print('xxx save mask2')
-                raw_mask_path = os.path.join(raw_mask_dir, os.path.splitext(filename)[0] + "_raw.png")
+                raw_mask_path = os.path.join(raw_mask_dir, os.path.splitext(filename)[0] + "_mask.png")
 
                 print('xxx save mask2')
                 raw_mask_image.save(raw_mask_path)
@@ -129,7 +133,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Perform semantic segmentation on a folder of images and save multiple output types.")
     parser.add_argument("--input_dir", type=str, default="data/apgdata/", help="Path to the directory containing input images.")
     parser.add_argument("--output_dir", type=str, default="outputs/tmp/", help="Path to the directory containing input images.")
-    parser.add_argument("--raw_mask_dir", type=str, default="mask", help="Path to the directory to save the raw grayscale masks.")
+    parser.add_argument("--raw_mask_dir", type=str, default="masks", help="Path to the directory to save the raw grayscale masks.")
     parser.add_argument("--colored_mask_dir", type=str, default="color_mask", help="Path to the directory to save the colored masks.")
     parser.add_argument("--overlay_dir", type=str, default="overlay", help="Path to the directory to save the overlayed images.")
     parser.add_argument("--ckptfn", type=str, default="model_deeplabv3_pretrained.pt", help="ckpt filename")
@@ -139,9 +143,9 @@ if __name__ == "__main__":
                         help="DeepLabV3 backbone to use. Choose 'resnet50' or 'resnet101'.")
 
     args = parser.parse_args()
-    raw_mask_dir = args.output_dir+args.raw_mask_dir
-    colored_mask_dir = args.output_dir+args.colored_mask_dir
-    overlay_dir = args.output_dir+args.overlay_dir
+    raw_mask_dir = os.path.join(args.output_dir,args.raw_mask_dir)
+    colored_mask_dir = os.path.join(args.output_dir, args.colored_mask_dir)
+    overlay_dir = os.path.join(args.output_dir,args.overlay_dir)
     input_dir=args.input_dir+"images" 
     segment_and_save_images(input_dir, raw_mask_dir, colored_mask_dir, overlay_dir, args.model, args.load_ckpt, args.save_ckpt, args.ckptfn)
 
