@@ -99,6 +99,8 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
                
                 # Create and save the raw (grayscale) mask
                 raw_mask_array = output_predictions.byte().cpu().numpy()
+                uniq = np.unique(raw_mask_array).tolist()
+                print('xxx uniq ', uniq)
 
                 # FIX: Squeeze the array to remove the extra channel dimension
                 raw_mask_array_squeezed = np.squeeze(raw_mask_array)

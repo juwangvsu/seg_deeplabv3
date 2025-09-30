@@ -5,7 +5,7 @@ import json
 from typing import Dict, Tuple, List
 import cv2
 import numpy as np
-
+'''
 DEFAULT_CLASSES = {
     0: "background",
     1: "pavement",
@@ -13,6 +13,7 @@ DEFAULT_CLASSES = {
     3: "car",
     4: "tree",
 }
+'''
 
 # BGR colors for OpenCV (so they match saves)
 DEFAULT_COLORS = {

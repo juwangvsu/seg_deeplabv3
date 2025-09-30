@@ -7,6 +7,20 @@ docker:
 	container:
 		deeplabseg
 
+---------9.30/25 segformer city train deeplabv3 -------
+segformer pretrained model (cityscrape) generate mask as gt to train
+deeplabv3 model:
+   58  python3 test_seg4.py --data_dir data/apgdata --out_dir outputs/segformer_city
+   59  python3 verify_label.py --masks outputs/segformer_city/masks/
+ 2032  eog outputs/segformer_city/overlay/000361_overlay.png 
+ 2033  sudo rm data/apgdata/masks/* -f
+ 2034  sudo cp  outputs/segformer_city/masks/* data/apgdata/masks/
+
+   60  cd data/apgdata/masks/
+   61  ../../../rename_mask.sh 
+   64  python3 train.py --config configs/apgdata.yaml
+   71  python3 predict_deeplabv3.py --load_ckpt --ckptfn outputs/epoch_010.ckpt --output_dir outputs/tmp2
+
 --------------9/27/25 test stock deeplabv3 ----------------------
 use pretrained model:
 @alien3:host
@@ -33,6 +47,11 @@ status:
 	apgdata training run works now. result to be checked
 	python3 verify_label.py --masks data/apgdata/masks
 		some not valid, should not happen since using stock weights
+
+@@	 python3 visualize.py --images data/apgdata/images   --masks  data/apgdata/masks --output_dir outputs/vis_train4   --legend --alpha 0.5
+	eog outputs/vis_train4/000464_overlay.png 
+	!!!predict_deeplabv3.py color_mask only show person
+
 train apgdata issue:
 	    scaler.scale(loss).backward()
   File "/usr/local/lib/python3.10/dist-packages/torch/amp/grad_scaler.py", line 214, in scale

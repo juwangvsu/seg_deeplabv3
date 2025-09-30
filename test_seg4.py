@@ -138,7 +138,8 @@ def main():
     p.add_argument("--data_dir", required=True, help="Data root dir containing an 'images' subfolder.")
     p.add_argument("--out_dir", default="outputs/segformer", help="Data dir output subfolder.")
     p.add_argument("--input", default="", help="Optional single image name or path. If omitted, process all images in <data_dir>/images.")
-    p.add_argument("--model", default="nvidia/segformer-b0-finetuned-ade-512-512",
+    #p.add_argument("--model", default="nvidia/segformer-b0-finetuned-ade-512-512",
+    p.add_argument("--model", default="nvidia/segformer-b5-finetuned-cityscapes-1024-1024",
                    help="HF model repo id for semantic segmentation.")
     p.add_argument("--alpha", type=float, default=0.5, help="Overlay alpha ∈ [0,1].")
     p.add_argument("--max-legend", type=int, default=25, help="Max classes listed in legend.")
