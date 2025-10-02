@@ -18,19 +18,28 @@ current:
 	(0) cd /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/images
 		mogrify -format png *.jpg
 	(1) sgf1 : generate gt using segformer
-		python3 verify_label.py --masks outputs/segformer/radar_scorp2/masks/
+	    python3 verify_label.py --masks outputs/segformer/radar_scorp2/masks/
 		~/Documents/parking-seg-deeplabv3$ ./rename_mask2.sh 
 
-		cp -r outputs/segformer/radar_scorp2/masks/ /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/
+	    cp -r outputs/segformer/radar_scorp2/masks/ /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/
 
 	
 	(2) train:
 		python3 train.py --config configs/radarcam.yaml
 
 	(3) predict:
-	python3 predict_deeplabv3.py --input_dir /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/ --load_ckpt --ckptfn outputs/best.ckpt --output_dir outputs/tmp3
+	python3 predict_deeplabv3.py --input_dir /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/ --load_ckpt --ckptfn outputs/best.ckpt --output_dir outputs/tmp3 [--filename 000167.pmg]
+		single filename mode. also in test_seg4.py  
 
 
+issue:
+	color palette diff between predict_deeplabv3.py and test_seg4.py
+	fixed:  unified to same color palette
+
+status:
+	retrained result decent. next to 
+	(1) degrade image and eval prediction accuracy
+	(2) try to train and predict using radar image
 ... 
 
 ---------9/30/25 segformer/city train deeplabv3 apgdata -------

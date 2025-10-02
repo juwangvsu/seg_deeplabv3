@@ -77,7 +77,8 @@ def segment_one(
     mask_out = masks_dir / f"{stem}_mask.png"
 
     # Palette + colorized mask
-    palette = build_palette(len(labels), seed=0)
+    palette = build_palette(len(labels), seed=0) #city scrape 19 classes
+    print('xxx palette ', palette)
     color_mask = colorize_mask(pred, palette)
     color_img = Image.fromarray(color_mask, mode="RGB")
     color_img.save(colored_out)
@@ -90,6 +91,7 @@ def segment_one(
 
     # Legend: show only classes present, sorted by frequency
     uniq = np.unique(pred).tolist()
+    print('xxx uniq ', uniq)
     uniq = [i for i in uniq if 0 <= i < len(labels)]
     counts = [(i, int((pred == i).sum())) for i in uniq]
     counts.sort(key=lambda x: x[1], reverse=True)

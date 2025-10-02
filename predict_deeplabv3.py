@@ -19,6 +19,20 @@ def create_deeplabv3_model(model_type: str):
         return models.segmentation.deeplabv3_resnet50(weights=models.segmentation.DeepLabV3_ResNet50_Weights.DEFAULT).eval()
     else:
         raise ValueError("Invalid model_type. Choose 'resnet50' or 'resnet101'.")
+import colorsys
+
+def build_palette(n: int, seed: int = 0) -> np.ndarray:
+    """Deterministic [n,3] RGB palette (0..255)."""
+    rng = np.random.default_rng(seed)
+    hues = np.linspace(0, 1, n, endpoint=False)
+    sat = 0.75
+    val = 0.95
+    colors = []
+    for h in hues:
+        r, g, b = colorsys.hsv_to_rgb(float(h), sat, val)
+        colors.append([int(r * 255), int(g * 255), int(b * 255)])
+    colors = np.array(colors, dtype=np.uint8)
+    return colors[rng.permutation(n)]
 
 def get_color_palette():
     """Returns a color palette for the 21 classes (including background)."""
@@ -82,7 +96,7 @@ def save_overlay(img, blend, overlay_out,palette, no_legend=False, labels=None, 
     plt.close()
     print(f"    overlay:      {overlay_out}")
 
-def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir: str, overlay_dir: str, model_type: str = 'resnet50', load_ckpt=False, save_ckpt=False, ckptfn="model_deeplabv3_pretrained.pt"):
+def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir: str, overlay_dir: str, model_type: str = 'resnet50', load_ckpt=False, save_ckpt=False, ckptfn="model_deeplabv3_pretrained.pt", filenamex=""):
     """
     Performs semantic segmentation on all images in a folder and saves
     raw masks, colored masks, and overlayed images to specified directories.
@@ -103,7 +117,7 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
     model = create_deeplabv3_model(model_type)
     labels = load_labels(model)
     print('xxx ', model)
-    print('yyy ', model.state_dict().keys())
+    #print('yyy ', model.state_dict().keys())
     #exit(0)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     if save_ckpt:
@@ -112,7 +126,7 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
         torch.save(ckpt, 'model_deeplabv3_pretrained.pt')
     if load_ckpt:
         ckpt = torch.load(ckptfn, map_location=device, weights_only=False)
-        print('xxx ckpt', ckpt)
+        #print('xxx ckpt', ckpt)
         model.load_state_dict(ckpt['model'], strict=True)
 
     model.to(device)
@@ -125,10 +139,14 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
     ])
     
     # Get the color palette
-    palette = get_color_palette()
+    palette = build_palette(19)
+    print('xxx palette ', palette)
+    #palette = get_color_palette()
 
     # Iterate over all files in the input directory
     for filename in os.listdir(input_dir):
+        if not filenamex=="" and not filenamex==filename:
+            continue
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             image_path = os.path.join(input_dir, filename)
             
@@ -185,6 +203,7 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Perform semantic segmentation on a folder of images and save multiple output types.")
     parser.add_argument("--input_dir", type=str, default="data/apgdata/", help="Path to the directory containing input images.")
+    parser.add_argument("--filename", type=str, default="", help="if empty string do all files")
     parser.add_argument("--output_dir", type=str, default="outputs/tmp/", help="Path to the directory containing input images.")
     parser.add_argument("--raw_mask_dir", type=str, default="masks", help="Path to the directory to save the raw grayscale masks.")
     parser.add_argument("--colored_mask_dir", type=str, default="color_mask", help="Path to the directory to save the colored masks.")
@@ -200,5 +219,5 @@ if __name__ == "__main__":
     colored_mask_dir = os.path.join(args.output_dir, args.colored_mask_dir)
     overlay_dir = os.path.join(args.output_dir,args.overlay_dir)
     input_dir=args.input_dir+"images" 
-    segment_and_save_images(input_dir, raw_mask_dir, colored_mask_dir, overlay_dir, args.model, args.load_ckpt, args.save_ckpt, args.ckptfn)
+    segment_and_save_images(input_dir, raw_mask_dir, colored_mask_dir, overlay_dir, args.model, args.load_ckpt, args.save_ckpt, args.ckptfn, filenamex=args.filename)
 
