@@ -6,8 +6,36 @@ docker:
 	jwang3vsu/parking-seg:cuda12.1
 	container:
 		deeplabseg
+data:alien3
+	/media/student/datar/radarstuff/20190813_scorp_dataset
+	~/Documents/datasets/radar_cam
 
----------9.30/25 segformer city train deeplabv3 -------
+current:
+	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
+
+---------10/1/25 segformer/city train deeplabv3 radarcam dataset' camera -------
+	(-1) dataset: cp subfolder camxxx to images
+	(0) cd /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/images
+		mogrify -format png *.jpg
+	(1) sgf1 : generate gt using segformer
+		python3 verify_label.py --masks outputs/segformer/radar_scorp2/masks/
+		~/Documents/parking-seg-deeplabv3$ ./rename_mask2.sh 
+
+		cp -r outputs/segformer/radar_scorp2/masks/ /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/
+
+	
+	(2) train:
+		python3 train.py --config configs/radarcam.yaml
+
+	(3) predict:
+	python3 predict_deeplabv3.py --input_dir /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/ --load_ckpt --ckptfn outputs/best.ckpt --output_dir outputs/tmp3
+
+
+... 
+
+---------9/30/25 segformer/city train deeplabv3 apgdata -------
+test_seg4.py:
+	pretrained weights city scrape
 segformer pretrained model (cityscrape) generate mask as gt to train
 deeplabv3 model:
    58  python3 test_seg4.py --data_dir data/apgdata --out_dir outputs/segformer_city
@@ -39,12 +67,15 @@ use pretrained model:
 	python3 verify_label.py --masks data/apgdata/masks
 
 segformer:
+       (sgf1) python3 test_seg4.py --data_dir  /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36 --out_dir outputs/segformer/radar_scorp2 --device cuda
+
         python3 test_seg4.py --data_dir data/apgdata --out_dir outputs/segformer
+		assume images under data_dir
         	use nvidia/segformer-b0-finetuned-ade-512-512 not deeplabv3.
 		result saved in 
 			data_dir: masks, overlay, colored_masks
 status:
-	apgdata training run works now. result to be checked
+	apgdata training run works now. 
 	python3 verify_label.py --masks data/apgdata/masks
 		some not valid, should not happen since using stock weights
 
@@ -111,7 +142,7 @@ docker build -t parking-seg:cuda12.1 -f Dockerfile .
 
 docker:
 	cd ~/Documents/parking-seg-deeplabv3
-	docker run --gpus all -t -d --shm-size=1g  -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg parking-seg:cuda12.1  bash
+	docker run --gpus all -t -d --shm-size=1g  -v /media/student/datar:/media/student/datar -v /media/student/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg parking-seg:cuda12.1  bash
 		pip install transformers==4.56.2
 Train:
 	python train.py --config configs/parkinglot.yaml

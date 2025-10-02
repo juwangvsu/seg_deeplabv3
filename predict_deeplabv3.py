@@ -4,6 +4,9 @@ from PIL import Image
 import os
 import argparse
 import numpy as np
+from typing import Dict, List
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 # load stock pretrained and dump to local file deepv3 resnet50
 # --load_ckpt load a local pt file, this override the default one
 # --save_ckpt save to a local pt file
@@ -28,6 +31,57 @@ def create_overlay(original_image, colored_mask, alpha=0.5):
     overlay = Image.blend(original_image.convert("RGB"), colored_mask.convert("RGB"), alpha)
     return overlay
 
+def load_labels(model) -> List[str]:
+    """Get contiguous id->label list from HF model config."""
+    weights=models.segmentation.DeepLabV3_ResNet50_Weights.DEFAULT
+    labels = weights.meta["categories"]
+
+    # Print the list of labels
+    print(labels)
+    '''
+    id2label_raw: Dict[str, str] = getattr(model.config, "id2label", {})
+    if id2label_raw:
+        id2label = {int(k): v for k, v in id2label_raw.items()}
+        num_labels = max(id2label.keys()) + 1
+        labels = [id2label.get(i, f"class_{i}") for i in range(num_labels)]
+    else:
+        num_labels = getattr(model.config, "num_labels", 150)
+        labels = [f"class_{i}" for i in range(num_labels)]a
+    '''
+    return labels
+
+def save_overlay(img, blend, overlay_out,palette, no_legend=False, labels=None, show_ids=[1,2]):
+    #show_ids=[1,2]
+    # Plot and save overlay PNG
+    plt.figure(figsize=(16, 7))
+    ax1 = plt.subplot(1, 2, 1)
+    ax1.imshow(img)
+    ax1.set_title("Original")
+    ax1.axis("off")
+    ax2 = plt.subplot(1, 2, 2)
+    ax2.imshow(blend)
+    ax2.set_title("Segmentation (overlay)")
+    ax2.axis("off")
+    print('yyy ')
+    if not no_legend and len(show_ids) > 0:
+        legend_patches = [
+            Patch(facecolor=palette[i] / 255.0, edgecolor="black", label=f"{i}: {labels[i]}")
+            for i in show_ids
+        ]
+        ax2.legend(
+            handles=legend_patches,
+            loc="upper left",
+            bbox_to_anchor=(1.02, 1.0),
+            borderaxespad=0.0,
+            frameon=True,
+            title="Classes",
+        )
+
+    plt.tight_layout()
+    plt.savefig(overlay_out, bbox_inches="tight", dpi=150)
+    plt.close()
+    print(f"    overlay:      {overlay_out}")
+
 def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir: str, overlay_dir: str, model_type: str = 'resnet50', load_ckpt=False, save_ckpt=False, ckptfn="model_deeplabv3_pretrained.pt"):
     """
     Performs semantic segmentation on all images in a folder and saves
@@ -47,6 +101,7 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
 
     # Load the specified DeepLabV3 model
     model = create_deeplabv3_model(model_type)
+    labels = load_labels(model)
     print('xxx ', model)
     print('yyy ', model.state_dict().keys())
     #exit(0)
@@ -95,7 +150,6 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
 
                 # Convert the output to a segmentation mask with class IDs
                 output_predictions = output.argmax(1)[0]
-                print('xxx save mask', output_predictions.shape)
                
                 # Create and save the raw (grayscale) mask
                 raw_mask_array = output_predictions.byte().cpu().numpy()
@@ -106,13 +160,9 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
                 raw_mask_array_squeezed = np.squeeze(raw_mask_array)
 
                 raw_mask_image = Image.fromarray(raw_mask_array_squeezed).resize(original_size, Image.NEAREST)
-                print('xxx save mask2')
                 raw_mask_path = os.path.join(raw_mask_dir, os.path.splitext(filename)[0] + "_mask.png")
 
-                print('xxx save mask2')
                 raw_mask_image.save(raw_mask_path)
-
-                print('xxx save colored mask')
                 
                 # Create and save the colored mask
                 colored_mask_image = Image.fromarray(raw_mask_array).resize(original_size, Image.NEAREST)
@@ -124,7 +174,8 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
                 # Create and save the overlay image
                 overlay_image = create_overlay(input_image, colored_mask_image)
                 overlay_path = os.path.join(overlay_dir, os.path.splitext(filename)[0] + "_overlay.png")
-                overlay_image.save(overlay_path)
+                save_overlay(input_image, overlay_image,overlay_out=overlay_path, palette=palette, labels=labels, show_ids=uniq)
+                # overlay_image.save(overlay_path)
                 
                 print(f"Processed '{filename}': Saved raw, colored, and overlay masks.")
             
