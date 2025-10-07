@@ -5,6 +5,7 @@ data:
   root: /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/
   train_images: images
   train_masks: masks
+  radar_npy: ral_outputs_2019-08-13-14-04-36/angle_range_numpy
   val_images: images
   val_masks:  masks
 

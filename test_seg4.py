@@ -73,7 +73,7 @@ def segment_one(
     # Prepare outputs
     stem = img_path.stem
     overlay_out = overlay_dir / f"{stem}_overlay.png"
-    colored_out = colored_dir / f"{stem}_colored_mask.png"
+    colored_out = colored_dir / f"{stem}_color.png"
     mask_out = masks_dir / f"{stem}_mask.png"
 
     # Palette + colorized mask

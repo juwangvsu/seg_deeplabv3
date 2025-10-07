@@ -9,9 +9,28 @@ docker:
 data:alien3
 	/media/student/datar/radarstuff/20190813_scorp_dataset
 	~/Documents/datasets/radar_cam
+outputs:
+	segformer/radar_scorp : segformer prediction, as gt
+	tmp3		:       deeplabv3 retrained model prediction on radarstuff
+	tmp4		:       deeplabv3 retrained model prediction on degraded radarstuff
+
+diff_:
+	compare deeplabv3 prediction vs gt(segformer result)
+	python3 diff_images.py --dir1 outputs/tmp3/color_mask/ --dir2 outputs/segformer/radar_scorp/colored_masks/ --outdir tmp/out/
 
 current:
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
+
+--------10/5/25 radcam --------------------
+root@96c5e2aa4727:/workspace# python3 -m radcam.train --config configs/radarcam.yaml 
+ self.seg_decoder = SegDecoder(cam_tok.size(-1), num_classes=self.num_classes, fmap_hw=(Hc,Wc))
+  File "/workspace/radcam/model.py", line 173, in __init__
+    self.head = nn.Conv2d(d//2, num_classes, 1)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/conv.py", line 515, in __init__
+    super().__init__(
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/conv.py", line 109, in __init__
+    if out_channels % groups != 0:
+TypeError: unsupported operand type(s) for %: 'NoneType' and 'int'
 
 ---------10/1/25 segformer/city train deeplabv3 radarcam dataset' camera -------
 	(-1) dataset: cp subfolder camxxx to images
