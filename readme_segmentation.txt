@@ -1,3 +1,4 @@
+https://chatgpt.com/share/e/68e53f50-2e9c-800c-9714-8bbd42ab2cd3
 
 ----------------------9/27/25 sticky--------------
 alien3:
@@ -23,15 +24,9 @@ current:
 
 --------10/5/25 radcam --------------------
 root@96c5e2aa4727:/workspace# python3 -m radcam.train --config configs/radarcam.yaml 
- self.seg_decoder = SegDecoder(cam_tok.size(-1), num_classes=self.num_classes, fmap_hw=(Hc,Wc))
-  File "/workspace/radcam/model.py", line 173, in __init__
-    self.head = nn.Conv2d(d//2, num_classes, 1)
-  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/conv.py", line 515, in __init__
-    super().__init__(
-  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/conv.py", line 109, in __init__
-    if out_channels % groups != 0:
-TypeError: unsupported operand type(s) for %: 'NoneType' and 'int'
 
+status:
+	loss nan
 ---------10/1/25 segformer/city train deeplabv3 radarcam dataset' camera -------
 	(-1) dataset: cp subfolder camxxx to images
 	(0) cd /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/images

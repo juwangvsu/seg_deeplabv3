@@ -195,6 +195,7 @@ class AuxRadarHead(nn.Module):
 class RadarCameraSeg(nn.Module):
     def __init__(self, num_classes=19, d=256, heads=8):
         super().__init__()
+        self._num_classes = num_classes          # <— keep the value here
         self.backbone = FusionBackbone(d=d, heads=heads)
         # decoder Hc,Wc will be known after first forward; keep placeholder
         self.seg_decoder = None
@@ -217,7 +218,10 @@ class RadarCameraSeg(nn.Module):
         )
 
         if self.seg_decoder is None:
-            self.seg_decoder = SegDecoder(cam_tok.size(-1), num_classes=self.num_classes, fmap_hw=(Hc,Wc))
+            self.seg_decoder = SegDecoder(cam_tok.size(-1), num_classes=self.num_classes, fmap_hw=(Hc,Wc)).to(device=cam_tok.device, dtype=cam_tok.dtype)
+        #print('xxx cam_tok.device ', cam_tok.device)
+        #model_device = next(self.seg_decoder.parameters()).device
+        #print('xxx seg_decoder device ', model_device)
         seg_logits = self.seg_decoder(cam_tok, target_size=img.shape[-2:])  # [B,K,H,W]
 
         aux_logits = self.aux_radar(rad_tok)                                # [B,Nr,2]
@@ -225,7 +229,7 @@ class RadarCameraSeg(nn.Module):
 
     @property
     def num_classes(self):
-        return self.seg_decoder.num_classes if self.seg_decoder else None
+        return self._num_classes
 
 # ----------------------------
 # Utility: building sparsity masks (sketch)

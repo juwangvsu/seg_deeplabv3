@@ -24,7 +24,7 @@ train:
   amp: true
   ignore_index: 255
   resume: null          # path to checkpoint to resume
-  output_dir: outputs
+  output_dir: outputs_radcam
   save_every: 5         # epochs
 
 augment:

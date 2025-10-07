@@ -15,9 +15,8 @@ import torch
 from torch.utils.data import Dataset
 from PIL import Image
 import numpy as np
-from pathlib import Path
-from torchvision import transforms as T
-import random
+
+from tqdm import tqdm
 
 class RadarCamSegDataset(Dataset):
     """
@@ -168,8 +167,10 @@ def modality_dropout(img, radar, p_img=0.0, p_radar=0.1):
 # ----------------------------
 def train_epoch(model, loader, optim, scaler, losses, device, calib=None, clip_grad=1.0):
     model.train()
-    total = 0.0
-    for batch in loader:
+    total_loss = 0.0
+    pbar = tqdm(loader, desc="Training", unit="batch")
+
+    for batch in pbar:
         img   = batch["image"].to(device, non_blocking=True)   # [B,3,H,W]
         radar = batch["radar"].to(device, non_blocking=True)   # [B,1,R,A]
         target= batch["mask"].to(device, non_blocking=True)    # [B,H,W]
@@ -202,8 +203,12 @@ def train_epoch(model, loader, optim, scaler, losses, device, calib=None, clip_g
             if clip_grad: scaler.unscale_(optim); nn.utils.clip_grad_norm_(model.parameters(), clip_grad)
             scaler.step(optim); scaler.update()
 
-        total += loss.item()
-    return total / max(1,len(loader))
+        total_loss += loss.item()
+        avg_loss = total_loss / (pbar.n + 1)
+        pbar.set_postfix({"loss": f"{loss.item():.4f}", "avg": f"{avg_loss:.4f}"})
+
+    pbar.close()
+    return total_loss / max(1,len(loader))
 
 @torch.no_grad()
 def validate(model, loader, losses, device):
