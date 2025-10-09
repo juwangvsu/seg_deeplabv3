@@ -22,11 +22,29 @@ diff_:
 current:
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
+-------10/9/25  segformer_pvt_min train radar_scorp image only----------
+deep:
+	python3 segformer_pvtv2_min/train.py --config segformer_pvtv2_min/config.yml --encoder pvt_v2_b2 --load outputs_segformref/segformer_local.pth 
+		data/radar_scorp
+		outputs_segformeref/segformer_radarscorm_images.pth
+
 --------10/5/25 radcam --------------------
-root@96c5e2aa4727:/workspace# python3 -m radcam.train --config configs/radarcam.yaml 
+root@96c5e2aa4727:/workspace# python3 -m radcam.train --config configs/radarcam.yaml [--eval]
 
 status:
 	loss nan
+	fixed, to double check what cause nan
+	radcam_model.pt
+	load pt issue, might be model changed?
+	save orig incorrect. radcam/eval.py:83
+
+decode head might need relu and batchnorm:
+    (1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): ReLU()
+    (4): Conv2d(256, 21, kernel_size=(1, 1), stride=(1, 1))
+
+
 ---------10/1/25 segformer/city train deeplabv3 radarcam dataset' camera -------
 	(-1) dataset: cp subfolder camxxx to images
 	(0) cd /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/images

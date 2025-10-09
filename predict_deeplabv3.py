@@ -96,7 +96,7 @@ def save_overlay(img, blend, overlay_out,palette, no_legend=False, labels=None, 
     plt.close()
     print(f"    overlay:      {overlay_out}")
 
-def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir: str, overlay_dir: str, model_type: str = 'resnet50', load_ckpt=False, save_ckpt=False, ckptfn="model_deeplabv3_pretrained.pt", filenamex=""):
+def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir: str, overlay_dir: str, model_type: str = 'resnet50', load_ckpt=False, save_ckpt=False, ckptfn="model_deeplabv3_pretrained.pt", filenamex="", quickone=False):
     """
     Performs semantic segmentation on all images in a folder and saves
     raw masks, colored masks, and overlayed images to specified directories.
@@ -116,9 +116,12 @@ def segment_and_save_images(input_dir: str, raw_mask_dir: str, colored_mask_dir:
     # Load the specified DeepLabV3 model
     model = create_deeplabv3_model(model_type)
     labels = load_labels(model)
-    print('xxx ', model)
+    print('Model layers ', model)
+    if quickone:
+        exit(0)
+        #just show model and exit
+
     #print('yyy ', model.state_dict().keys())
-    #exit(0)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     if save_ckpt:
         ckpt={}
@@ -210,6 +213,7 @@ if __name__ == "__main__":
     parser.add_argument("--overlay_dir", type=str, default="overlay", help="Path to the directory to save the overlayed images.")
     parser.add_argument("--ckptfn", type=str, default="model_deeplabv3_pretrained.pt", help="ckpt filename")
     parser.add_argument('--load_ckpt', action='store_true')
+    parser.add_argument('--quickone', action='store_true')
     parser.add_argument('--save_ckpt', action='store_true')
     parser.add_argument("--model", type=str, default="resnet50", choices=["resnet50", "resnet101"], 
                         help="DeepLabV3 backbone to use. Choose 'resnet50' or 'resnet101'.")
@@ -219,5 +223,5 @@ if __name__ == "__main__":
     colored_mask_dir = os.path.join(args.output_dir, args.colored_mask_dir)
     overlay_dir = os.path.join(args.output_dir,args.overlay_dir)
     input_dir=args.input_dir+"images" 
-    segment_and_save_images(input_dir, raw_mask_dir, colored_mask_dir, overlay_dir, args.model, args.load_ckpt, args.save_ckpt, args.ckptfn, filenamex=args.filename)
+    segment_and_save_images(input_dir, raw_mask_dir, colored_mask_dir, overlay_dir, args.model, args.load_ckpt, args.save_ckpt, args.ckptfn, filenamex=args.filename, quickone=args.quickone)
 

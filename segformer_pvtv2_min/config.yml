@@ -1,0 +1,22 @@
+data:
+  root: data/radar_scorp
+  train_images: images
+  train_masks: masks
+  val_images: images
+  val_masks:  masks
+
+model:
+  num_classes: 19
+
+train:
+  input_size: 768       # square crop
+  lr: 0.0006
+  weight_decay: 0.01
+  batch_size: 4
+  num_workers: 8
+  max_epochs: 50
+  amp: true
+  ignore_index: 255
+  resume: null          # path to checkpoint to resume
+  output_dir: outputs_segformref
+  save_every: 5         # epochs
