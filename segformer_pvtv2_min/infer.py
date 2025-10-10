@@ -33,6 +33,7 @@ def main():
     parser.add_argument('--num_classes', type=int, default=19)
     parser.add_argument('--encoder', type=str, default='pvt_v2_b2')
     parser.add_argument('--input_size', type=int, default=768)
+    parser.add_argument('--showmodel', action='store_true')
     args = parser.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -40,6 +41,9 @@ def main():
     model = SegFormer(num_classes=args.num_classes, encoder_variant=args.encoder)
     ckpt = torch.load(args.checkpoint, map_location='cpu')
     model.load_state_dict(ckpt['model'], strict=False)
+    print(model)
+    if args.showmodel:
+        exit(0)
     model.to(device)
     model.eval()
 

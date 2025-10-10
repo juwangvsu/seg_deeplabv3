@@ -26,7 +26,12 @@ current:
 deep:
 	python3 segformer_pvtv2_min/train.py --config segformer_pvtv2_min/config.yml --encoder pvt_v2_b2 --load outputs_segformref/segformer_local.pth 
 		data/radar_scorp
-		outputs_segformeref/segformer_radarscorm_images.pth
+		outputs_segformeref/segformer_radarscorp_imgs.pth
+
+infer:
+	python3 segformer_pvtv2_min/infer.py --images data/radar_scorp/images \
+  --checkpoint outputs_segformref/segformer_radarscorp_imgs.pth \
+  --out_dir outputs_infer_radarscorp2 --encoder pvt_v2_b2 --input_size 768 [--showmodel]
 
 --------10/5/25 radcam --------------------
 root@96c5e2aa4727:/workspace# python3 -m radcam.train --config configs/radarcam.yaml [--eval]
