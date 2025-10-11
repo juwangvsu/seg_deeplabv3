@@ -22,13 +22,18 @@ diff_:
 current:
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
--------10/11/25 pvtv2_seg_city2/ ws3--------------
+-------10/11/25 pvtv2_seg_city2/ ws3 gpu1--------------
 /home/sysinit/Documents/datasets/datar
 /home/sysinit/Documents/datasets/datarad
 /home/sysinit/Documents/seg_deeplabv3
 
-docker:
+docker:(ws3)
 	docker run --gpus all -t -d --shm-size=1g  -v /home/sysinit/Documents/datasets/datar:/media/student/datar -v /home/sysinit/Documents/datasets/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg jwang3vsu/parking-seg:cuda12.1  bash
+
+docker:(gpu1)
+	docker run --gpus all -t -d --shm-size=1g  -v /data/jwang/datasets/datar:/media/student/datar -v /data/jwang/datasets/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg jwang3vsu/parking-seg:cuda12.1  bash
+		/workspace/data/cityscape# ln -sn /media/student/datarad/city/leftImg8bit/
+		/workspace/data/cityscape# ln -sn /media/student/datarad/city_gtfine/gtFine/
 
 -------10/11/25 pvtv2_seg_city2/ alien3--------------
 train:
