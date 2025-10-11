@@ -203,7 +203,7 @@ docker build -t parking-seg:cuda12.1 -f Dockerfile .
 
 docker:
 	cd ~/Documents/parking-seg-deeplabv3
-	docker run --gpus all -t -d --shm-size=1g  -v /media/student/datar:/media/student/datar -v /media/student/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg parking-seg:cuda12.1  bash
+	docker run --gpus all -t -d --shm-size=1g  -v /media/student/datar:/media/student/datar -v /media/student/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg jwang3vsu/parking-seg:cuda12.1  bash
 		pip install transformers==4.56.2
 Train:
 	python train.py --config configs/parkinglot.yaml
