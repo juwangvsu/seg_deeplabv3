@@ -22,6 +22,20 @@ diff_:
 current:
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
+-------10/11/25 pvtv2_seg_city2/ --------------
+train:
+	python3 pvtv2_seg_city2/train.py --dataset cityscapes --data-root data/cityscape   --encoder b2 --num-classes 19 --size 512 1024 --epochs 100 --batch-size 8 --load runs/exp/best.pth 
+
+infer:
+	python3 pvtv2_seg_city2/inference.py --images-dir data/cityscape/leftImg8bit/test/ --load runs/exp/best.pth   --encoder b2 --num-classes 19 --size 512 896 --out-dir runs/exp2_infer --overlay --showmodel
+
+runs/exp3_infer:
+	inferience overlay image incorrect
+
+tbd:
+	check model structure btw this model and official backbone.
+	model print show when they are created? not necessary follow the computing flow in forward.	
+
 -------10/9/25  segformer_pvt_min train radar_scorp image only----------
 deep:
 	python3 segformer_pvtv2_min/train.py --config segformer_pvtv2_min/config.yml --encoder pvt_v2_b2 --load outputs_segformref/segformer_local.pth 
@@ -32,6 +46,7 @@ infer:
 	python3 segformer_pvtv2_min/infer.py --images data/radar_scorp/images \
   --checkpoint outputs_segformref/segformer_radarscorp_imgs.pth \
   --out_dir outputs_infer_radarscorp2 --encoder pvt_v2_b2 --input_size 768 [--showmodel]
+
 
 --------10/5/25 radcam --------------------
 root@96c5e2aa4727:/workspace# python3 -m radcam.train --config configs/radarcam.yaml [--eval]
