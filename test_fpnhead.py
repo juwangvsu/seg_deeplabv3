@@ -5,9 +5,11 @@ from mmcv.cnn import ConvModule
 #from mmseg.registry import MODELS
 #from ..utils import Upsample, resize
 class FPNHead(nn.Module):
-     def __init__(self, feature_strides, **kwargs):
+     def __init__(self, feature_strides,in_channels, **kwargs):
         super().__init__()
+        self.in_channels = in_channels
         self.feature_strides = feature_strides
+        self.channels=[256]
 
         self.scale_heads = nn.ModuleList()
         for i in range(len(feature_strides)):
@@ -21,10 +23,11 @@ class FPNHead(nn.Module):
                         self.in_channels[i] if k == 0 else self.channels,
                         self.channels,
                         3,
-                        padding=1,
-                        conv_cfg=self.conv_cfg,
-                        norm_cfg=self.norm_cfg,
-                        act_cfg=self.act_cfg))
+                        padding=1
+                        #conv_cfg=self.conv_cfg,
+                        #norm_cfg=self.norm_cfg,
+                        #act_cfg=self.act_cfg)
+                        ))
                 if feature_strides[i] != feature_strides[0]:
                     scale_head.append(
                         Upsample(
@@ -32,5 +35,5 @@ class FPNHead(nn.Module):
                             mode='bilinear',
                             align_corners=self.align_corners))
             self.scale_heads.append(nn.Sequential(*scale_head))
-fpn_h = FPNHead([2,4])
+fpn_h = FPNHead([2,4], in_channels=[3])
 print(fpn_h)
