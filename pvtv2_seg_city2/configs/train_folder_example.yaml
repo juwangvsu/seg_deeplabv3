@@ -1,0 +1,19 @@
+train:
+  data-root: /path/to/DATA_ROOT
+  dataset: folder
+  encoder: b2
+  num-classes: 19
+  size: [512, 896]
+  batch-size: 4
+  epochs: 40
+  lr: 0.0003
+  weight-decay: 0.01
+  workers: 4
+  ignore-index: 255
+  out-dir: runs/exp1
+  save-every: 5
+  seed: 42
+  max-grad-norm: 1.0
+  save-val-pred: false
+  eval: false
+  load:

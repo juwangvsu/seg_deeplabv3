@@ -1,0 +1,6 @@
+torch>=2.0
+torchvision>=0.15
+PyYAML>=6.0
+tqdm>=4.66
+Pillow>=10.0
+numpy>=1.23

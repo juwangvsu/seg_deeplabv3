@@ -1,0 +1,10 @@
+infer:
+  images-dir: /path/to/DATA_ROOT/val/images
+  load: runs/exp1/best.pth
+  encoder: b2
+  num-classes: 19
+  size: [512, 896]
+  batch-size: 4
+  workers: 2
+  out-dir: runs/exp1_infer
+  overlay: true
