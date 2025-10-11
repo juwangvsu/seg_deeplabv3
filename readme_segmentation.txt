@@ -22,7 +22,15 @@ diff_:
 current:
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
--------10/11/25 pvtv2_seg_city2/ --------------
+-------10/11/25 pvtv2_seg_city2/ ws3--------------
+/home/sysinit/Documents/datasets/datar
+/home/sysinit/Documents/datasets/datarad
+/home/sysinit/Documents/seg_deeplabv3
+
+docker:
+	docker run --gpus all -t -d --shm-size=1g  -v /home/sysinit/Documents/datasets/datar:/media/student/datar -v /home/sysinit/Documents/datasets/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg jwang3vsu/parking-seg:cuda12.1  bash
+
+-------10/11/25 pvtv2_seg_city2/ alien3--------------
 train:
 	python3 pvtv2_seg_city2/train.py --dataset cityscapes --data-root data/cityscape   --encoder b2 --num-classes 19 --size 512 1024 --epochs 100 --batch-size 8 --load runs/exp/best.pth 
 
@@ -205,6 +213,7 @@ docker:
 	cd ~/Documents/parking-seg-deeplabv3
 	docker run --gpus all -t -d --shm-size=1g  -v /media/student/datar:/media/student/datar -v /media/student/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg parking-seg:cuda12.1  bash
 		pip install transformers==4.56.2
+	
 Train:
 	python train.py --config configs/parkinglot.yaml
 
