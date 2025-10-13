@@ -110,7 +110,8 @@ def main():
         meta=ckpt.get("meta", {})
         if "num_classes" in meta and meta["num_classes"] != args.num_classes:
             print(f"[warn] num_classes mismatch: ckpt={meta['num_classes']} vs arg={args.num_classes}")
-        model.load_state_dict(ckpt.get("model", ckpt), strict=False)
+        model.load_state_dict(ckpt.get("model", ckpt))
+        #model.load_state_dict(ckpt.get("model", ckpt), strict=False)
         print(f"Loaded weights from {args.load}")
 
     print(model)

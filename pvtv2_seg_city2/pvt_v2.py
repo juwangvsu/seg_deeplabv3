@@ -98,7 +98,7 @@ class SRABlock(nn.Module):
         x = x.transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
-        return x
+    return x
 
 class PVTv2Block(nn.Module):
     def __init__(self, dim: int, heads: int, sr_ratio: int, mlp_ratio: float, drop: float, attn_drop: float, drop_path: float):
@@ -196,8 +196,9 @@ class SegHeadLite(nn.Module):
         self.l3 = ConvBNAct(c3, width, 1)
         self.l4 = ConvBNAct(c4, width, 1)
         self.l5 = ConvBNAct(c5, width, 1)
-        self.smooth = ConvBNAct(width, width, 3, 1, 1)
+        #self.smooth = ConvBNAct(width, width, 3, 1, 1)
         self.cls = nn.Conv2d(width, num_classes, 1)
+        self.smooth = ConvBNAct(width, width, 3, 1, 1)
     def forward(self, feats: list, input_size: Tuple[int,int]):
         f2, f3, f4, f5 = feats
         h, w = f2.shape[-2:]
@@ -207,7 +208,9 @@ class SegHeadLite(nn.Module):
         p5 = F.interpolate(self.l5(f5), size=(h,w), mode="bilinear", align_corners=False)
         x = self.smooth(p2 + p3 + p4 + p5)
         logits = self.cls(x)
-        return F.interpolate(logits, size=input_size, mode="bilinear", align_corners=False)
+        rst= F.interpolate(logits, size=input_size, mode="bilinear", align_corners=False)
+        #print('xxx x.shape, logits.shape, F.inte(logits).shape', x.shape, logits.shape, rst.shape)
+        return rst
 
 class SegModel(nn.Module):
     def __init__(self, backbone: Optional[nn.Module]=None, variant: str="b2", num_classes: int=19):
@@ -219,4 +222,6 @@ class SegModel(nn.Module):
         self.head = SegHeadLite(self.backbone.out_channels, num_classes)
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         feats = self.backbone(x)
-        return self.head(feats, input_size=x.shape[-2:])
+        rst= self.head(feats, input_size=x.shape[-2:])
+        #print('xxx feats len, .shape rst.shape', len(feats) , feats[0].shape, feats[1].shape, feats[2].shape, feats[3].shape, rst.shape)
+        return rst

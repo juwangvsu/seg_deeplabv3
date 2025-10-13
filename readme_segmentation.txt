@@ -45,6 +45,8 @@ infer:
 runs/exp3_infer:
 	inferience overlay image incorrect
 
+backbone output shape, decoded final output shape:
+	torch.Size([4, 64, 128, 224]) torch.Size([4, 128, 64, 112]) torch.Size([4, 320, 32, 56]) torch.Size([4, 512, 16, 28]) torch.Size([4, 19, 512, 896])
 tbd:
 	check model structure btw this model and official backbone.
 	model print show when they are created? not necessary follow the computing flow in forward.	
