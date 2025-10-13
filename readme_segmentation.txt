@@ -22,6 +22,22 @@ diff_:
 current:
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
+-------10/13/25 segformer_mitlocal --------------
+alien3:
+
+train:
+   pvtv2:
+	segformer_mitlocal# python3 train.py --data-root ../data/apgdata --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit
+
+   mitbone:
+	python3 train.py --data-root ../data/apgdata --backbone mit_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit_mitbone
+
+infer:
+   pvtv2:
+	python infer.py --weights runs/exp_mit/best.pth --images ../data/apgdata/images --backbone pvt_v2_b2 --num-classes 19 --out runs/exp_mit_infer 
+   mitbone:
+	python3 infer.py --weights runs/exp_mit_mitbone/best.pth --images ../data/apgdata/images --backbone mit_b2 --num-classes 19 --out runs/exp_mitbackone_infer
+
 -------10/11/25 pvtv2_seg_city2/ ws3 gpu1--------------
 /home/sysinit/Documents/datasets/datar
 /home/sysinit/Documents/datasets/datarad
