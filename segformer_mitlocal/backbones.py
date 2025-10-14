@@ -18,6 +18,7 @@ _DEFAULT_CHANNELS = {
 }
 
 def _create_timm_backbone(name: str, pretrained: bool = True, out_indices=(0, 1, 2, 3)):
+    print(' crate_timm_backbone pretrained ', pretrained, 'name ', name)
     model = timm.create_model(name, pretrained=pretrained, features_only=True, out_indices=out_indices)
     info = model.feature_info
     channels = [f["num_chs"] for f in info]
@@ -30,6 +31,7 @@ def _create_timm_backbone(name: str, pretrained: bool = True, out_indices=(0, 1,
     return model, channels, reduction
 
 def _create_mit_backbone(name: str):
+    print(' crate_mit_backbone no pretrained ', namei, ', name')
     assert MixVisionTransformer is not None, "mit.py not found — ensure it exists."
     if name not in MIT_CONFIGS:
         raise ValueError(f"Unknown MiT variant '{name}'. Options: {list(MIT_CONFIGS.keys())}")

@@ -98,7 +98,7 @@ class SRABlock(nn.Module):
         x = x.transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
-    return x
+        return x
 
 class PVTv2Block(nn.Module):
     def __init__(self, dim: int, heads: int, sr_ratio: int, mlp_ratio: float, drop: float, attn_drop: float, drop_path: float):

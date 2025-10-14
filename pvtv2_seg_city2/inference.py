@@ -125,6 +125,8 @@ def main():
 
     for imgs, origs, names in tqdm(dl, desc="infer"):
         imgs=imgs.to(device, non_blocking=True); logits=model(imgs); preds=logits.argmax(1).cpu().numpy()
+        print('xxx preds.shape ', preds.shape)
+        print('xxx imgs.shape ', imgs.shape)
         for i in range(preds.shape[0]):
             name=names[i].rsplit('.',1)[0]
             mask=preds[i].astype(np.uint8)

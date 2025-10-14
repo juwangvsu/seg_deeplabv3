@@ -23,18 +23,30 @@ current:
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
 -------10/13/25 segformer_mitlocal --------------
-alien3:
+alien3:ws3
+
+img_size 512x896
 
 train:
    pvtv2:
-	segformer_mitlocal# python3 train.py --data-root ../data/apgdata --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit
+	segformer_mitlocal# python3 train.py --data-root ../data/apgdata --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit_pvt2
+
+	segformer_mitlocal# python3 train.py --data-root ../data/apgdata --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit_pvt2
+	Epoch 40/40 | loss 0.0570 | mIoU 0.3460
+
+	?python3 train.py --data-root ../data/cityscape --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --out runs/exp_mit_pvt2_city --dstype cityscapes  
 
    mitbone:
-	python3 train.py --data-root ../data/apgdata --backbone mit_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit_mitbone
+	python3 train.py --data-root ../data/apgdata --backbone mit_b2 --num-classes 19 --epochs 40 --batch-size 6 --out runs/exp_mit_mitbone
+
+	?python3 train.py --data-root ../data/cityscape --backbone mit_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit_mitbone_city --dstype cityscapes [--boverride checkpoints/mit_b2_from_hf.pth] 
+	Epoch 40/40 | loss 0.1928 | mIoU 0.4665
 
 infer:
    pvtv2:
-	python infer.py --weights runs/exp_mit/best.pth --images ../data/apgdata/images --backbone pvt_v2_b2 --num-classes 19 --out runs/exp_mit_infer 
+	python infer.py --weights runs/exp_mit_pvt2/best.pth --images ../data/apgdata/images --backbone pvt_v2_b2 --num-classes 19 --out runs/exp_mitpvt_infer 
+	python3 infer.py --weights runs/exp_mit_pvt2_city/best.pth --images ../data/cityscape/leftImg8bit/val/frankfurt --backbone pvt_v2_b2 --num-classes 19 --out runs/exp_mitpvt_infer_city
+ 
    mitbone:
 	python3 infer.py --weights runs/exp_mit_mitbone/best.pth --images ../data/apgdata/images --backbone mit_b2 --num-classes 19 --out runs/exp_mitbackone_infer
 

@@ -10,9 +10,12 @@ from segformer import SegFormer
 from data import SegFolder
 
 def compute_miou(pred: torch.Tensor, target: torch.Tensor, num_classes: int) -> float:
+    #print('xxx pred target shape ', pred.shape, target.shape)
     pred = pred.view(-1)
     target = target.view(-1)
+    #print('xxx pred target shape ', pred.shape, target.shape, torch.unique(pred), torch.unique(target))
     mask = target >= 0
+    mask = target != 255
     pred = pred[mask]
     target = target[mask]
     hist = torch.bincount((target * num_classes + pred).to(torch.int64), minlength=num_classes*num_classes
@@ -68,9 +71,12 @@ def main():
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--epochs", type=int, default=20)
     parser.add_argument("--lr", type=float, default=5e-4)
-    parser.add_argument("--img-size", type=int, default=512)
+    parser.add_argument("--img_size", type=int, nargs=2, default=[512,896], metavar=("H","W"))
+
     parser.add_argument("--out", type=str, default="runs/exp1")
+    parser.add_argument("--dstype", type=str, default="folder") #or cityscapes
     parser.add_argument("--resume", type=str, default="")
+    parser.add_argument("--boverride", type=str, default="")
     parser.add_argument("--no-amp", action="store_true")
     args = parser.parse_args()
 
@@ -79,7 +85,7 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    ds = SegFolder(args.data_root, image_size=args.img_size, aug=True)
+    ds = SegFolder(args.data_root, image_size=args.img_size, aug=True, dataset=args.dstype)
     n_val = max(1, int(0.1 * len(ds)))
     n_train = len(ds) - n_val
     train_ds, val_ds = random_split(ds, [n_train, n_val])
@@ -98,6 +104,7 @@ def main():
     start_epoch = 0
     if args.resume:
         ckpt = torch.load(args.resume, map_location="cpu")
+        #resume ckpt must be a full model
         if "model" in ckpt:
             model.load_state_dict(ckpt["model"])
         else:
@@ -107,6 +114,16 @@ def main():
         start_epoch = ckpt.get("epoch", 0)
         print(f"Resumed from {args.resume} at epoch {start_epoch}")
 
+    #load backbone if ...
+    #model.backbone.state_dict().keys()
+    if not args.boverride=="":
+        print(f"override backbone parameter")
+        #model.backbone.state_dict().keys()
+        bbckpt = torch.load(args.boverride, map_location="cpu")
+        #print('xxx bbchpt.keys', bbckpt.keys())
+        model.backbone.load_state_dict(bbckpt)
+    #print('xxx model.backbone.keys', model.backbone.state_dict().keys())
+    #exit(0)
     best_miou = 0.0
     for epoch in range(start_epoch, args.epochs):
         train_loss = train_one_epoch(model, train_loader, optimizer, scaler, device, criterion, amp=not args.no_amp)

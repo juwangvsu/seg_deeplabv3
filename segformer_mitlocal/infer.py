@@ -23,15 +23,22 @@ def main():
     parser.add_argument("--weights", type=str, required=True)
     parser.add_argument("--images", type=str, required=True)
     parser.add_argument("--out", type=str, default="out")
-    parser.add_argument("--img-size", type=int, default=512)
+    parser.add_argument("--img-size", type=int, nargs=2, default=[512,896], metavar=("H","W"))
+
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     bk, channels, _ = create_pyramid_backbone(args.backbone, pretrained=False)
     model = SegFormer(bk, channels, num_classes=args.num_classes, decoder_embed_dim=256)
+    print(' xxx SegFormer ', model)
     sd = torch.load(args.weights, map_location="cpu")
+    print(' xxx checkpoint ', sd.keys())
+    #exit(0)
+    #print(' xxx checkpoint ', sd["model"])
+    #model.load_state_dict(sd)
     model.load_state_dict(sd.get("model", sd))
+    #exit(0)
     model.to(device).eval()
 
     out_dir = Path(args.out)
@@ -40,7 +47,7 @@ def main():
     (out_dir / "overlay").mkdir(parents=True, exist_ok=True)
 
     tfm = T.Compose([
-        T.Resize((args.img_size, args.img_size), interpolation=T.InterpolationMode.BILINEAR),
+        T.Resize((args.img_size[0], args.img_size[1]), interpolation=T.InterpolationMode.BILINEAR),
         T.ToTensor(),
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
