@@ -75,7 +75,7 @@ def main():
 
     parser.add_argument("--out", type=str, default="runs/exp1")
     parser.add_argument("--dstype", type=str, default="folder") #or cityscapes
-    parser.add_argument("--resume", type=str, default="")
+    parser.add_argument("--load", type=str, default="")
     parser.add_argument("--boverride", type=str, default="")
     parser.add_argument("--no-amp", action="store_true")
     args = parser.parse_args()
@@ -102,8 +102,8 @@ def main():
     criterion = cross_entropy_2d
 
     start_epoch = 0
-    if args.resume:
-        ckpt = torch.load(args.resume, map_location="cpu")
+    if args.load:
+        ckpt = torch.load(args.load, map_location="cpu")
         #resume ckpt must be a full model
         if "model" in ckpt:
             model.load_state_dict(ckpt["model"])
@@ -112,7 +112,7 @@ def main():
         if "optim" in ckpt:
             optimizer.load_state_dict(ckpt["optim"])
         start_epoch = ckpt.get("epoch", 0)
-        print(f"Resumed from {args.resume} at epoch {start_epoch}")
+        print(f"Resumed from {args.load} at epoch {start_epoch}")
 
     #load backbone if ...
     #model.backbone.state_dict().keys()

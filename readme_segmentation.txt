@@ -1,7 +1,7 @@
 https://chatgpt.com/share/e/68e53f50-2e9c-800c-9714-8bbd42ab2cd3
 
 ----------------------9/27/25 sticky--------------
-alien3:
+alien3:ws3
 	student@alien3:~/Documents/parking-seg-deeplabv3
 docker:
 	jwang3vsu/parking-seg:cuda12.1
@@ -19,22 +19,28 @@ diff_:
 	compare deeplabv3 prediction vs gt(segformer result)
 	python3 diff_images.py --dir1 outputs/tmp3/color_mask/ --dir2 outputs/segformer/radar_scorp/colored_masks/ --outdir tmp/out/
 
+versions:
+	segformer_mitlocal:	local impl mit backbone + local simple head
+	pvtv2_seg_city2:	local pvtv2 backbone impl + local head
+	segformer_pvtv2_min:	stock timm pvtv2 backbone + local head
 current:
+	10/14: compare training result on cityscapes: stock pvtv2 vs local...
+
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
 -------10/13/25 segformer_mitlocal --------------
 alien3:ws3
 
-img_size 512x896
+img_size 512x896, dataset: if cityscape, all imgs under train/ and val. train loop split randomly to train and val
 
 train:
    pvtv2:
-	segformer_mitlocal# python3 train.py --data-root ../data/apgdata --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit_pvt2
-
-	segformer_mitlocal# python3 train.py --data-root ../data/apgdata --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --img-size 768 --out runs/exp_mit_pvt2
+	segformer_mitlocal# 
+	python3 train.py --data-root ../data/apgdata --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --img_size 768 768 --out runs/exp_mit_pvt2
 	Epoch 40/40 | loss 0.0570 | mIoU 0.3460
 
-	?python3 train.py --data-root ../data/cityscape --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --out runs/exp_mit_pvt2_city --dstype cityscapes  
+	python3 train.py --data-root ../data/cityscape --backbone pvt_v2_b2 --num-classes 19 --epochs 40 --batch-size 6 --out runs/exp_mit_pvt2_city --dstype cityscapes  
+	Epoch 40/40 | loss 0.1285 | mIoU 0.4110
 
    mitbone:
 	python3 train.py --data-root ../data/apgdata --backbone mit_b2 --num-classes 19 --epochs 40 --batch-size 6 --out runs/exp_mit_mitbone
@@ -54,7 +60,8 @@ infer:
 /home/sysinit/Documents/datasets/datar
 /home/sysinit/Documents/datasets/datarad
 /home/sysinit/Documents/seg_deeplabv3
-
+	pvtv2_seg_city2
+	dataset: cityscapes only, train for train, val for val
 docker:(ws3)
 	docker run --gpus all -t -d --shm-size=1g  -v /home/sysinit/Documents/datasets/datar:/media/student/datar -v /home/sysinit/Documents/datasets/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg jwang3vsu/parking-seg:cuda12.1  bash
 
@@ -65,8 +72,10 @@ docker:(gpu1)
 
 -------10/11/25 pvtv2_seg_city2/ alien3--------------
 train:
-	python3 pvtv2_seg_city2/train.py --dataset cityscapes --data-root data/cityscape   --encoder b2 --num-classes 19 --size 512 1024 --epochs 100 --batch-size 8 --load runs/exp/best.pth 
-
+	python3 pvtv2_seg_city2/train.py --dataset cityscapes --data-root data/cityscape   --encoder b2 --num-classes 19 --size 512 1024 --epochs 100 --batch-size 8 --load runs/exp/best.pth [--out-dir runs/exp]
+	80 sec/epoch
+	train_loss=0.1339  val_acc=0.9285  val_mIoU=0.5470
+	
 infer:
 	python3 pvtv2_seg_city2/inference.py --images-dir data/cityscape/leftImg8bit/test/ --load runs/exp/best.pth   --encoder b2 --num-classes 19 --size 512 896 --out-dir runs/exp2_infer --overlay --showmodel
 
@@ -80,6 +89,10 @@ tbd:
 	model print show when they are created? not necessary follow the computing flow in forward.	
 
 -------10/9/25  segformer_pvt_min train radar_scorp image only----------
+segformer_pvtv2_min/
+	stock backbone (timm), local decode head
+	backbone = timm.create_mode()
+	decode_head = SegFormerHead
 deep:
 	python3 segformer_pvtv2_min/train.py --config segformer_pvtv2_min/config.yml --encoder pvt_v2_b2 --load outputs_segformref/segformer_local.pth 
 		data/radar_scorp
