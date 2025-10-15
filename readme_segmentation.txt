@@ -23,12 +23,31 @@ versions:
 	segformer_mitlocal:	local impl mit backbone + local simple head
 	pvtv2_seg_city2:	local pvtv2 backbone impl + local head
 	segformer_pvtv2_min:	stock timm pvtv2 backbone + local head
+	segformer_hf_test:	hf segformer with stock nvidia weights for ade or cityscapes
+
+eval:
+	segformer_hf_test:b0:b2:b3:
+		Pixel Accuracy: 0.78%
+		Mean IoU:       0.63%
+
+
 current:
 	10/14: compare training result on cityscapes: stock pvtv2 vs local...
+	   python3 pvtv2_seg_city2/inference.py --images-dir data/cityscape/leftImg8bit/val/ --load runs/exp/best.pth   --encoder b2 --num-classes 19 --size 512 896 --out-dir runs/exp2_infer --overlay 
+	   eog runs/exp2_infer/color_mask/frankfurt_000000_009688_leftImg8bit.png
+
+	   python3 segformer_pvtv2_min/train.py --config segformer_pvtv2_min/config_city.yml --encoder pvt_v2_b2 [--load outputs_segformref_city/segformer_local.pth] 
+
+
 
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
+-----------10/15/35 /workspace/segformer_hf_test#----------
+python3 infer_segformer.py   --model-id nvidia/segformer-b0-finetuned-cityscapes-512-1024   --input ../data/cityscape/leftImg8bit/val/lindau/lindau_000019_000019_leftImg8bit.png --out-dir out_city
+	stock nvidia pretrained weights.
+
 -------10/13/25 segformer_mitlocal --------------
+
 alien3:ws3
 
 img_size 512x896, dataset: if cityscape, all imgs under train/ and val. train loop split randomly to train and val
@@ -77,7 +96,7 @@ train:
 	train_loss=0.1339  val_acc=0.9285  val_mIoU=0.5470
 	
 infer:
-	python3 pvtv2_seg_city2/inference.py --images-dir data/cityscape/leftImg8bit/test/ --load runs/exp/best.pth   --encoder b2 --num-classes 19 --size 512 896 --out-dir runs/exp2_infer --overlay --showmodel
+	python3 pvtv2_seg_city2/inference.py --images-dir data/cityscape/leftImg8bit/val/ --load runs/exp/best.pth   --encoder b2 --num-classes 19 --size 512 896 --out-dir runs/exp2_infer --overlay --showmodel
 
 runs/exp3_infer:
 	inferience overlay image incorrect
@@ -89,14 +108,21 @@ tbd:
 	model print show when they are created? not necessary follow the computing flow in forward.	
 
 -------10/9/25  segformer_pvt_min train radar_scorp image only----------
+
 segformer_pvtv2_min/
 	stock backbone (timm), local decode head
 	backbone = timm.create_mode()
 	decode_head = SegFormerHead
+	
+dataset:
+	data.py for regular, data_city.py for cityscape type, select via yaml
 deep:
 	python3 segformer_pvtv2_min/train.py --config segformer_pvtv2_min/config.yml --encoder pvt_v2_b2 --load outputs_segformref/segformer_local.pth 
 		data/radar_scorp
 		outputs_segformeref/segformer_radarscorp_imgs.pth
+	python3 segformer_pvtv2_min/train.py --config segformer_pvtv2_min/config_city.yml --encoder pvt_v2_b2 [--load outputs_segformref_city/segformer_local.pth] 
+		data/cityscape
+		outputs_segformref_city/*.pth
 
 infer:
 	python3 segformer_pvtv2_min/infer.py --images data/radar_scorp/images \

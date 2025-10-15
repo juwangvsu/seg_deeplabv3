@@ -1,4 +1,4 @@
-
+from torch.utils.data import DataLoader, random_split
 import os
 import argparse
 from tqdm import tqdm
@@ -10,6 +10,7 @@ from torch.cuda.amp import GradScaler, autocast
 
 from segformer import SegFormer
 from data import SegDataset
+from data_city import SegFolder # cityscape dataset
 from utils import load_config, save_checkpoint
 
 def compute_mIoU(conf_matrix: torch.Tensor) -> float:
@@ -53,17 +54,24 @@ def main():
     data_cfg = cfg['data']
     model_cfg = cfg['model']
     train_cfg = cfg['train']
-
+    dataset_type = data_cfg['datatype']
+    img_size = data_cfg['img_size']
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    train_set = SegDataset(
-        root=data_cfg['root'], split='', img_dirname=data_cfg['train_images'], mask_dirname=data_cfg['train_masks'],
-        input_size=train_cfg['input_size'], ignore_index=train_cfg['ignore_index']
-    )
-    val_set = SegDataset(
-        root=data_cfg['root'], split='', img_dirname=data_cfg['val_images'], mask_dirname=data_cfg['val_masks'],
-        input_size=train_cfg['input_size'], ignore_index=train_cfg['ignore_index']
-    )
+    
+    if dataset_type=="cityscapes":
+        ds = SegFolder(data_cfg['root'], image_size=img_size, aug=True, dataset=dataset_type)
+        n_val = max(1, int(0.1 * len(ds)))
+        n_train = len(ds) - n_val
+        train_set, val_set = random_split(ds, [n_train, n_val])
+    else:
+        train_set = SegDataset(
+            root=data_cfg['root'], split='', img_dirname=data_cfg['train_images'], mask_dirname=data_cfg['train_masks'],
+            input_size=train_cfg['input_size'], ignore_index=train_cfg['ignore_index']
+        )
+        val_set = SegDataset(
+            root=data_cfg['root'], split='', img_dirname=data_cfg['val_images'], mask_dirname=data_cfg['val_masks'],
+            input_size=train_cfg['input_size'], ignore_index=train_cfg['ignore_index']
+        )
 
     train_loader = DataLoader(train_set, batch_size=train_cfg['batch_size'], shuffle=True, num_workers=train_cfg['num_workers'], pin_memory=True)
     val_loader = DataLoader(val_set, batch_size=train_cfg['batch_size'], shuffle=False, num_workers=train_cfg['num_workers'], pin_memory=True)

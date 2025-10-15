@@ -1,0 +1,24 @@
+data:
+  datatype: cityscapes
+  img_size: [512,896]
+  root: data/cityscape
+  train_images: leftImg8bit/train
+  train_masks: gtFine/train
+  val_images: leftImg8bit/val
+  val_masks:  gtFine/val
+
+model:
+  num_classes: 19
+
+train:
+  input_size: 768       # square crop
+  lr: 0.0006
+  weight_decay: 0.01
+  batch_size: 4
+  num_workers: 8
+  max_epochs: 50
+  amp: true
+  ignore_index: 255
+  resume: null          # path to checkpoint to resume
+  output_dir: outputs_segformref_city
+  save_every: 5         # epochs
