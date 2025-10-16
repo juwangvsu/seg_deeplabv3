@@ -149,13 +149,17 @@ def main():
                     help="Hugging Face model id or local path (e.g., nvidia/segformer-b2-finetuned-cityscapes-1024-1024)")
     ap.add_argument("--input-dir", required=True, type=str,
                     help="Directory containing Cityscapes images (leftImg8bit format).")
-    ap.add_argument("--mask-dir", required=True, type=str,
+    ap.add_argument("--mask-dir", type=str, default="",
                     help="Directory containing Cityscapes GT masks (gtFine format).")
     ap.add_argument("--out-dir", required=True, type=str, help="Output root directory.")
     ap.add_argument("--batch-size", type=int, default=2)
     ap.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--overlay-alpha", type=float, default=0.5)
     ap.add_argument('--showmodel', action='store_true')
+    ap.add_argument('--save', action='store_true')
+    # argparse section
+    ap.add_argument("--load", type=str, default=None,
+                help="Path to a .pth checkpoint (supports {'model_state': ...} or raw state_dict).")
 
     args = ap.parse_args()
 
@@ -171,6 +175,21 @@ def main():
     device = torch.device(args.device)
     model = SegformerForSemanticSegmentation.from_pretrained(args.model_id).to(device).eval()
     processor = AutoImageProcessor.from_pretrained(args.model_id)
+    # Load model + processor (existing)
+
+    if args.load:
+        print(f"[load] Loading checkpoint weights from: {args.load}")
+        ckpt = torch.load(args.load, map_location="cpu")
+        state_dict = ckpt.get("model_state", ckpt)  # accept either packed dict or raw state_dict
+        missing, unexpected = model.load_state_dict(state_dict, strict=False)
+        if missing:
+            print(f"[load][warn] Missing keys ({len(missing)}): {missing[:8]}{' ...' if len(missing)>8 else ''}")
+        if unexpected:
+            print(f"[load][warn] Unexpected keys ({len(unexpected)}): {unexpected[:8]}{' ...' if len(unexpected)>8 else ''}")
+        print("[load] Weights loaded.")
+
+    if args.save:
+        torch.save(model, args.model_id.split('/')[-1]+".pth")
     print('xxx ', model)
     if args.showmodel:
         exit(0)
