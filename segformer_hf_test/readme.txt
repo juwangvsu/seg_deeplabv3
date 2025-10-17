@@ -1,6 +1,6 @@
 status:
 	random init finetuing... ./segformer_city_ft_random/
-
+	adding dpp version
 -------------------------------------------------------
 https://huggingface.co/nvidia/mit-b4
 https://huggingface.co/models?other=segformer
