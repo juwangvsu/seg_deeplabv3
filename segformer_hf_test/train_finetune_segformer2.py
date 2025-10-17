@@ -166,7 +166,7 @@ class SegDataCollator:
 # ============================
 
 def fast_hist(pred: np.ndarray, tgt: np.ndarray, n_class: int, ignore_index: int) -> np.ndarray:
-    print('xxx tgt.shape pred.shape ', tgt.shape, pred.shape, n_class)
+    #print('xxx tgt.shape pred.shape ', tgt.shape, pred.shape, n_class)
     mask =( tgt != ignore_index) & (tgt>=0) & (tgt < n_class)
     if mask.sum() == 0:
         return np.zeros((n_class, n_class), dtype=np.int64)
