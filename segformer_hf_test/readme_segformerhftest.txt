@@ -74,6 +74,10 @@ infer:
        ws3:
         python3 infer_segformer2.py  --model-id nvidia/segformer-b2-finetuned-cityscapes-1024-1024 --load segformer_city_ft_random/best.pth   --input-dir ../data/cityscape/leftImg8bit/val --out-dir out_city_b2_ft_random --mask-dir ../data/cityscape/gtFine/val
 
+        gpu1:
+	python3 infer_segformer2.py  --model-id nvidia/segformer-b2-finetuned-cityscapes-1024-1024 --load segformer_city_ft_randomhead/best.pth   --input-dir ../data/cityscape/leftImg8bit/val --out-dir out_city_b2_ft_randomhead --mask-dir ../data/cityscape/gtFine/val
+		epoch 30 good quality
+		epoch 2 still decent
         eog:
         segformer_hf_test$ eog out_city_b2_ft/overlay/frankfurt/frankfurt_000000_000294_leftImg8bit.png
 
