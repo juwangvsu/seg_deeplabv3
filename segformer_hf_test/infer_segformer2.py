@@ -189,7 +189,7 @@ def main():
         print("[load] Weights loaded.")
 
     if args.save:
-        torch.save(model, args.model_id.split('/')[-1]+".pth")
+        torch.save({"model_state": model.state_dict()}, args.model_id.split('/')[-1]+".pth")
     print('xxx ', model)
     if args.showmodel:
         exit(0)
@@ -272,8 +272,8 @@ def main():
     # Final metrics
     acc, miou, per_class_iou = compute_metrics(hist)
     print("\n========== Cityscapes Evaluation ==========")
-    print(f"Pixel Accuracy: {acc*100:.2f}%")
-    print(f"Mean IoU:       {miou*100:.2f}%")
+    print(f"Pixel Accuracy: {acc*100:.2f}%", acc)
+    print(f"Mean IoU:       {miou*100:.2f}%", miou)
     # Uncomment if you want per-class IoU:
     # class_names = ["road","sidewalk","building","wall","fence","pole","traffic light","traffic sign",
     #                "vegetation","terrain","sky","person","rider","car","truck","bus","train","motorcycle","bicycle"]
