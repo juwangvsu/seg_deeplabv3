@@ -4,6 +4,15 @@ status:
 	double check infer_... acc and miou calculation
 		seems not righ
 		the unique values in mask contain >19, not right....
+python3 check_labels.py --mask_dir ../data/cityscape/gtFine/val/ --recursive
+Unique label IDs across all masks:
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+Total unique IDs: 33
+
+In the Cityscapes dataset, the label IDs 32 and 33 represent "void" classes that are not included in the standard 30-class definition. The dataset creators added them to represent special cases during the annotation process. 
+The Cityscapes dataset distinguishes between the raw annotation IDs (which go up to 33) and the 19 standard classes used for model training and evaluation. The IDs 32 and 33 are part of a special "void" group that also includes other ignored classes like ego vehicle and rectification border
+
 -------------------------------------------------------
 https://huggingface.co/nvidia/mit-b4
 https://huggingface.co/models?other=segformer
