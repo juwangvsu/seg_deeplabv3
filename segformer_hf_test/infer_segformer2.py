@@ -90,6 +90,10 @@ def match_cityscapes_mask(img_path: Path, input_dir: Path, mask_dir: Path) -> Op
     return None
 
 def fast_hist(pred: np.ndarray, tgt: np.ndarray, n_class: int, ignore_index: int) -> np.ndarray:
+    uniqp = np.unique(pred).tolist()
+    print('unique pred ', uniqp)
+    uniqt = np.unique(tgt).tolist()
+    print('unique gt ', uniqt)
     mask = (tgt != ignore_index) & (tgt>=0) & (tgt < n_class)
     if mask.sum() == 0:
         return np.zeros((n_class, n_class), dtype=np.int64)
@@ -101,6 +105,7 @@ def fast_hist(pred: np.ndarray, tgt: np.ndarray, n_class: int, ignore_index: int
 
 def compute_metrics(hist: np.ndarray) -> Tuple[float, float, np.ndarray]:
     # Overall pixel accuracy (ignoring 255 handled before hist aggregation)
+    print('xxx hist ', hist)
     acc = np.diag(hist).sum() / (hist.sum() + 1e-10)
     iu = np.diag(hist) / (hist.sum(axis=1) + hist.sum(axis=0) - np.diag(hist) + 1e-10)
     valid = ~np.isnan(iu)
@@ -225,6 +230,7 @@ def main():
         if not paired:
             continue
 
+        print(' image and mask pairs ', paired)
         # Load images and masks
         pil_imgs: List[Image.Image] = [Image.open(p).convert("RGB") for p, _ in paired]
         gt_masks: List[np.ndarray] = []
@@ -247,7 +253,10 @@ def main():
 
             # Metrics (ignore 255)
             hist += fast_hist(pred, gt, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX)
-
+            acc1, miou1,_ = compute_metrics(fast_hist(pred, pred, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX))
+            print('xxx predpred acc1, miou1', acc1, miou1)
+            acc1, miou1,_ = compute_metrics(fast_hist(gt, gt, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX))
+            print('xxx gtgt acc1, miou1', acc1, miou1)
             # Paths preserving relative structure under input_dir
             rel = img_path.relative_to(input_dir)
             # build out paths (replace extension with .png)

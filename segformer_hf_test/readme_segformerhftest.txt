@@ -3,6 +3,7 @@ status:
 	adding dpp version
 	double check infer_... acc and miou calculation
 		seems not righ
+		the unique values in mask contain >19, not right....
 -------------------------------------------------------
 https://huggingface.co/nvidia/mit-b4
 https://huggingface.co/models?other=segformer
