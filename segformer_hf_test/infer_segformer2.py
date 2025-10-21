@@ -12,7 +12,7 @@ from PIL import Image
 import torch
 import torch.nn.functional as F
 from transformers import AutoImageProcessor, SegformerForSemanticSegmentation
-
+from utils import *
 # ----------------------------
 # Cityscapes constants
 # ----------------------------
@@ -91,26 +91,38 @@ def match_cityscapes_mask(img_path: Path, input_dir: Path, mask_dir: Path) -> Op
 
 def fast_hist(pred: np.ndarray, tgt: np.ndarray, n_class: int, ignore_index: int) -> np.ndarray:
     uniqp = np.unique(pred).tolist()
-    print('unique pred ', uniqp)
     uniqt = np.unique(tgt).tolist()
-    print('unique gt ', uniqt)
+    #print('unique tgt tgt.shape', uniqt, tgt.shape)
+    #print('ignore index n_class ', ignore_index, n_class)
     mask = (tgt != ignore_index) & (tgt>=0) & (tgt < n_class)
     if mask.sum() == 0:
         return np.zeros((n_class, n_class), dtype=np.int64)
+    tgt=tgt[mask]
+    pred=pred[mask]
+    uniqp = np.unique(pred).tolist()
+    #print('unique pred pred.shape', uniqp, pred.shape)
+    uniqt = np.unique(tgt).tolist()
+    #print('unique tgt, tgt.shape ', uniqt, tgt.shape)
     hist = np.bincount(
-        (n_class * tgt[mask].astype(np.int64) + pred[mask]).astype(np.int64),
+        (n_class * tgt.astype(np.int64) + pred).astype(np.int64),
         minlength=n_class ** 2,
     ).reshape(n_class, n_class)
     return hist
 
 def compute_metrics(hist: np.ndarray) -> Tuple[float, float, np.ndarray]:
     # Overall pixel accuracy (ignoring 255 handled before hist aggregation)
-    print('xxx hist ', hist)
+    #print('xxx hist ', hist)
     acc = np.diag(hist).sum() / (hist.sum() + 1e-10)
-    iu = np.diag(hist) / (hist.sum(axis=1) + hist.sum(axis=0) - np.diag(hist) + 1e-10)
-    valid = ~np.isnan(iu)
-    miou = iu[valid].mean() if valid.any() else float("nan")
-    return float(acc), float(miou), iu
+    diag = np.diag(hist)
+    den  = hist.sum(axis=1) + hist.sum(axis=0) - diag  # TP+FP+FN per class
+    valid = den > 0
+    #iou = np.zeros_like(diag, dtype=np.float64)
+    iou= diag[valid] / (den[valid]+1e-10)
+    miou = iou.mean() 
+    #if valid.any() else float("nan")
+
+    #valid = ~np.isnan(iu)
+    return float(acc), float(miou), iou
 
 # ----------------------------
 # Inference (batched)
@@ -237,7 +249,8 @@ def main():
         target_sizes: List[Tuple[int,int]] = []
         for _, mpath in paired:
             gt = np.array(Image.open(mpath), dtype=np.uint8)
-            # If labelIds provided, you may need mapping -> trainIds; here we trust dataset uses labelTrainIds already.
+            gt = map_labelIds_to_trainIds(gt)
+            # labelIds provided, you may need mapping 
             gt_masks.append(gt)
             target_sizes.append(gt.shape)  # (H, W)
 
@@ -253,8 +266,7 @@ def main():
 
             # Metrics (ignore 255)
             hist += fast_hist(pred, gt, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX)
-            acc1, miou1,_ = compute_metrics(fast_hist(pred, pred, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX))
-            print('xxx predpred acc1, miou1', acc1, miou1)
+            print('xxx gt xxx ')
             acc1, miou1,_ = compute_metrics(fast_hist(gt, gt, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX))
             print('xxx gtgt acc1, miou1', acc1, miou1)
             # Paths preserving relative structure under input_dir

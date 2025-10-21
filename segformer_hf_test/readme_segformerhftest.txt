@@ -91,17 +91,15 @@ infer:
 		epoch 30 good quality
 		epoch 2 still decent
 
+10/20/25
+	gt label mapping fixed
+	miou calculation fixed, none present class excluded in compute_metrics
 ========== Cityscapes Evaluation ==========
-Pixel Accuracy: 0.73%
-Mean IoU:       0.49%
-
 epoch 25
-Pixel Accuracy: 0.99%
-Mean IoU:       0.59%
 
 best
-Pixel Accuracy: 1.06%
-Mean IoU:       0.69%
+Pixel Accuracy: 92.66% 0.9265750563369761
+Mean IoU:       45.95% 0.45945491797928883
 
 
         eog:
