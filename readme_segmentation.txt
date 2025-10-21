@@ -29,7 +29,9 @@ eval:
 	segformer_hf_test:b0:b2:b3:
 		Pixel Accuracy: 0.78%
 		Mean IoU:       0.63%
-
+	label id should be fixed in both train and infer. need to filter out
+	some labelid in original dataset to keep 19, see segformer_pvtv2_min
+	train.py and data_city.py
 
 current:
 	10/14: compare training result on cityscapes: stock pvtv2 vs local...
