@@ -33,6 +33,7 @@ def train_one_epoch(model, loader, optimizer, scaler, device, criterion, amp=Tru
         optimizer.zero_grad(set_to_none=True)
         with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=amp):
             logits = model(imgs)
+            print('train logits.shape masks.shape', logits.shape, masks.shape)
             loss = criterion(logits, masks)
 
         if amp:

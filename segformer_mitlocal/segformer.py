@@ -25,13 +25,17 @@ class MLPDecoderHead(nn.Module):
         outs = []
         for i, f in enumerate(feats):
             p = self.proj[i](f)
+            print('xxx i f.shape, p.shape)', i, f.shape, p.shape)
             if p.shape[-2:] != size:
                 p = torch.nn.functional.interpolate(p, size=size, mode="bilinear", align_corners=False)
             outs.append(p)
         x = torch.cat(outs, dim=1)
+        print('head cat x.shape ', x.shape)
         x = self.fuse(x)
+        print('head fuse x.shape ', x.shape)
         x = self.dropout(x)
         x = self.classifier(x)
+        print('head classifier x.shape ', x.shape)
         return x
 
 class SegFormer(nn.Module):
