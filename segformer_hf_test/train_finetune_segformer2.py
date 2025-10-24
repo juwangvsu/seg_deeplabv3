@@ -284,7 +284,7 @@ def main():
 
     parser.add_argument("--assume-trainIds", action="store_true",
                         help="Assume GT masks are *_labelTrainIds.png (skip labelIds->trainIds mapping)")
-    parser.add_argument("--save-every", type=int, default=1, help="Save checkpoint every N epochs")
+    parser.add_argument("--save-every", type=int, default=5, help="Save checkpoint every N epochs")
     parser.add_argument("--rand-backbone", action="store_true", help="Randomly re-initialize backbone (segformer)")
     parser.add_argument("--rand-decode-head", action="store_true", help="Randomly re-initialize decode head")
     parser.add_argument("--rand-all", action="store_true", help="Randomly re-initialize both backbone and decode head")

@@ -73,7 +73,7 @@ python3 train_finetune_segformer2.py   --model-id nvidia/segformer-b2-finetuned-
 -----------------------------------------------------
 random head: gpu1
 
-python3 train_finetune_segformer2.py   --model-id nvidia/segformer-b2-finetuned-cityscapes-1024-1024   --train-input-dir ../data/cityscape/leftImg8bit/train   --train-mask-dir  ../data/cityscape/gtFine/train   --val-input-dir   ../data/cityscape/leftImg8bit/val   --val-mask-dir    ../data/cityscape/gtFine/val   --output-dir      ./segformer_city_ft_randomhead   --batch-size 8 --lr 6e-5 --epochs 30 --img-height 512 --img-width 1024 --fp16 --rand-decode-head --resume-from ./segformer_city_ft_randomhead/best.pth 
+python3 train_finetune_segformer2.py   --model-id nvidia/segformer-b2-finetuned-cityscapes-1024-1024   --train-input-dir ../data/cityscape/leftImg8bit/train   --train-mask-dir  ../data/cityscape/gtFine/train   --val-input-dir   ../data/cityscape/leftImg8bit/val   --val-mask-dir    ../data/cityscape/gtFine/val   --output-dir      ./segformer_city_ft_randomhead   --batch-size 8 --lr 6e-5 --epochs 200 --img-height 512 --img-width 1024 --fp16 --rand-decode-head --resume-from ./segformer_city_ft_randomhead/best.pth 
 [val] epoch 1: loss=0.2150, acc=93.81%, mIoU=61.98%
         epoch 1: loss 3.6 -> 0.19
 [val] epoch 15: loss=0.1493, acc=95.79%, mIoU=75.70%
@@ -95,13 +95,82 @@ infer:
 	gt label mapping fixed
 	miou calculation fixed, none present class excluded in compute_metrics
 ========== Cityscapes Evaluation ==========
-epoch 25
+random:(backbone)
 
+epoch_001, data/cityscape/leftImg8bit/val
+Pixel Accuracy: 52.04% 0.5203552618882911
+Mean IoU:       8.33% 0.08325688679922241
+
+epoch_001, data/cityscape/leftImg8bit/train
+Pixel Accuracy: 51.74% 0.5173961929199637
+Mean IoU:       8.68% 0.0868003520369801
+
+epoch_001, data/cityscape_quick/leftImg8bit/val
+Pixel Accuracy: 50.31% 0.5031147261973504
+Mean IoU:       7.89% 0.07888204649779312
+
+epoch_030, data/cityscape/leftImg8bit/val
+Pixel Accuracy: 83.08% 0.830773510172923
+Mean IoU:       28.46% 0.2845551495153419
+
+epoch_030, data/cityscape/leftImg8bit/train
+Pixel Accuracy: 85.76% 0.8575685676246924
+Mean IoU:       35.55% 0.3555067316471587
+
+epoch_030, data/cityscape_quick/leftImg8bit/val
+Pixel Accuracy: 80.88% 0.808755995662897
+Mean IoU:       24.30% 0.24303238778258124
+
+epoch_200, data/cityscape/leftImg8bit/train
+Pixel Accuracy: 89.64% 0.8964215264304525
+Mean IoU:       45.54% 0.45538206000051495
+
+epoch_200, data/cityscape/leftImg8bit/val
+iPixel Accuracy: 86.61% 0.8661042067604375
+Mean IoU:       33.81% 0.33805307502297877
+
+randomhead
 best
 Pixel Accuracy: 92.66% 0.9265750563369761
 Mean IoU:       45.95% 0.45945491797928883
 
+epoch_001, data/cityscape/leftImg8bit/val
+Pixel Accuracy: 91.77% 0.9177280077719349
+Mean IoU:       54.20% 0.5419769881072555
 
+epoch_001, data/cityscape/leftImg8bit/train
+...
+
+epoch_001, data/cityscape_quick/leftImg8bit/val
+Pixel Accuracy: 90.87% 0.9086916349097909
+Mean IoU:       39.32% 0.39316229213734416
+
+epoch_031, data/cityscape/leftImg8bit/val
+Pixel Accuracy: 94.00% 0.9400259813082132
+Mean IoU:       66.63% 0.6663183285081321
+
+epoch_031, data/cityscape/leftImg8bit/train
+Pixel Accuracy: 95.88% 0.9587838864632993
+Mean IoU:       76.57% 0.7656998569397269
+
+epoch_031, data/cityscape_quick/leftImg8bit/val
+Pixel Accuracy: 92.58% 0.9258156881296874
+Mean IoU:       46.03% 0.4603321652496467
+
+b2 model:
+b2 model, data/cityscape/leftImg8bit/val
+Pixel Accuracy: 93.28% 0.9327920857220579
+Mean IoU:       65.33% 0.6532851414570748
+
+b2 model, data/cityscape/leftImg8bit/train
+Pixel Accuracy: 94.79% 0.947860495975673
+Mean IoU:       73.15% 0.7314871720855852
+
+b2 model, data/cityscape_quick/leftImg8bit/val
+Pixel Accuracy: 90.30% 0.9030087884659528
+Mean IoU:       42.93% 0.4292624184714141
+
+-----------------------------------------
         eog:
         segformer_hf_test$ eog out_city_b2_ft/overlay/frankfurt/frankfurt_000000_000294_leftImg8bit.png
 
