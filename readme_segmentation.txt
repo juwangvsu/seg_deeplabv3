@@ -44,6 +44,13 @@ current:
 
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
+-----------10/24/25 radseg ---------------------------
+use radar only for segmentation
+Epoch 001: loss=1.4223 acc=0.7474 miou=0.1052
+Epoch 002: loss=0.7739 acc=0.7595 miou=0.1222
+Epoch 003: loss=0.6644 acc=0.7307 miou=0.1526
+Epoch 004: loss=0.6246 acc=0.7127 miou=0.1451
+
 -----------10/15/35 /workspace/segformer_hf_test#----------
 python3 infer_segformer.py   --model-id nvidia/segformer-b0-finetuned-cityscapes-512-1024   --input ../data/cityscape/leftImg8bit/val/lindau/lindau_000019_000019_leftImg8bit.png --out-dir out_city
 	stock nvidia pretrained weights.
