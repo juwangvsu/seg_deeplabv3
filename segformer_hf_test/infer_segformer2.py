@@ -174,6 +174,7 @@ def main():
     ap.add_argument("--overlay-alpha", type=float, default=0.5)
     ap.add_argument('--showmodel', action='store_true')
     ap.add_argument('--save', action='store_true')
+    ap.add_argument('--savepred', action='store_true')
     # argparse section
     ap.add_argument("--load", type=str, default=None,
                 help="Path to a .pth checkpoint (supports {'model_state': ...} or raw state_dict).")
@@ -242,7 +243,7 @@ def main():
         if not paired:
             continue
 
-        print(' image and mask pairs ', paired)
+        #print(' image and mask pairs ', paired)
         # Load images and masks
         pil_imgs: List[Image.Image] = [Image.open(p).convert("RGB") for p, _ in paired]
         gt_masks: List[np.ndarray] = []
@@ -266,9 +267,8 @@ def main():
 
             # Metrics (ignore 255)
             hist += fast_hist(pred, gt, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX)
-            print('xxx gt xxx ')
-            acc1, miou1,_ = compute_metrics(fast_hist(gt, gt, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX))
-            print('xxx gtgt acc1, miou1', acc1, miou1)
+            #acc1, miou1,_ = compute_metrics(fast_hist(gt, gt, CITYSCAPES_CLASSES, CITYSCAPES_IGNORE_INDEX))
+            #print('xxx gtgt acc1, miou1', acc1, miou1)
             # Paths preserving relative structure under input_dir
             rel = img_path.relative_to(input_dir)
             # build out paths (replace extension with .png)
@@ -277,15 +277,12 @@ def main():
             pred_ovl_path = (out_overlay / rel).with_suffix(".png")
             for p in (pred_raw_path.parent, pred_col_path.parent, pred_ovl_path.parent):
                 ensure_dir(p)
-
-            # Save raw
-            Image.fromarray(pred, mode="L").save(pred_raw_path)
-
-            # Save colored + overlay
-            color = colorize_mask(pred, palette)
-            color.save(pred_col_path)
-            ovl = overlay_image(img, color, alpha=args.overlay_alpha)
-            ovl.save(pred_ovl_path)
+            if args.savepred:
+                Image.fromarray(pred, mode="L").save(pred_raw_path)
+                color = colorize_mask(pred, palette)
+                color.save(pred_col_path)
+                ovl = overlay_image(img, color, alpha=args.overlay_alpha)
+                ovl.save(pred_ovl_path)
 
             processed += 1
             print(f"[{processed}/{total}] {img_path.name} -> saved mask/color/overlay")
