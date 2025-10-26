@@ -51,6 +51,13 @@ Epoch 002: loss=0.7739 acc=0.7595 miou=0.1222
 Epoch 003: loss=0.6644 acc=0.7307 miou=0.1526
 Epoch 004: loss=0.6246 acc=0.7127 miou=0.1451
 
+see readme_radseg.txt
+result is supprising good
+
+radar data visualize:
+ 	python3 convert_angle_npy_to_png.py -i data/radar_scorp/angle_range_numpy/000321.npy -o 000321.png --autoscale
+	Convert an angle_range NumPy file (.npy) to a pseudo-colored PNG.
+
 -----------10/15/35 /workspace/segformer_hf_test#----------
 python3 infer_segformer.py   --model-id nvidia/segformer-b0-finetuned-cityscapes-512-1024   --input ../data/cityscape/leftImg8bit/val/lindau/lindau_000019_000019_leftImg8bit.png --out-dir out_city
 	stock nvidia pretrained weights.

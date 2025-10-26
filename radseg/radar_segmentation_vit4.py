@@ -474,6 +474,7 @@ def _infer_on_file(model, device, npy_path: str, img_size: Tuple[int, int], norm
                    out_png: str | None = None, out_color: str | None = None, out_overlay: str | None = None,
                    data_dir: str | None = None, images_subdir: str | None = None, num_classes: int = 0):
     arr = np.load(npy_path).astype(np.float32)
+    print('xxx npy shape ', npy_path, arr.shape)
     if arr.ndim == 3 and arr.shape[0] == 1:
         arr = arr[0]
     if arr.ndim != 2:
