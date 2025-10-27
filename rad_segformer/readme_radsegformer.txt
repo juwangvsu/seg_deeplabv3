@@ -21,10 +21,10 @@ Train:
 python3 train_eval_infer.py   --data-dir ../data/radar_scorp/   --num-classes 19   --mode train   --epochs 50   --batch-size 8   --image-size 512   --save-every 2   --ckpt-dir checkpoints/radar_b2   --out-dir outputs/radar_b2
 
 Eval (and save outputs):
-python train_eval_infer.py   --data-dir /path/to/data   --num-classes 19   --mode eval   --load best.pt   --ckpt-dir checkpoints/radar_b2   --save-output   --out-dir outputs/radar_b2
+python3 train_eval_infer.py   --data-dir ../data/radar_scorp   --num-classes 19   --mode eval   --load best.pt   --ckpt-dir checkpoints/radar_b2   --save-output   --out-dir outputs/radar_b2
 
 Infer one file:
-python train_eval_infer.py   --data-dir /path/to/data   --num-classes 19   --mode infer   --load best.pt   --ckpt-dir checkpoints/radar_b2   --input-file /path/to/data/angle_range_numpy/000123.npy   --out-dir outputs/radar_b2
+python3 train_eval_infer.py   --data-dir ../data/radar_scorp   --num-classes 19   --mode infer   --load best.pt   --ckpt-dir checkpoints/radar_b2   --input-file /path/to/data/angle_range_numpy/000123.npy   --out-dir outputs/radar_b2
 
 
 Epoch 10/50 | Val mIoU=0.2217 Acc=0.8220
