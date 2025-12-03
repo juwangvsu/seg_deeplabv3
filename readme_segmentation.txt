@@ -98,7 +98,7 @@ infer:
 	pvtv2_seg_city2
 	dataset: cityscapes only, train for train, val for val
 docker:(ws3)
-	docker run --gpus all -t -d --shm-size=1g  -v /home/sysinit/Documents/datasets/datar:/media/student/datar -v /home/sysinit/Documents/datasets/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg jwang3vsu/parking-seg:cuda12.1  bash
+	docker run --gpus all -t -d --restart always --privileged --shm-size=1g  -v /home/sysinit/Documents/datasets/datar:/media/student/datar -v /home/sysinit/Documents/datasets/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace  -e DISPLAY=${DISPLAY} -e QT_X11_NO_MITSHM=1 -v /tmp/.X11-unix:/tmp/.X11-unix:rw -v ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority --name deeplabseg jwang3vsu/parking-seg:cuda12.1  bash
 
 docker:(gpu1)
 	docker run --gpus all -t -d --shm-size=1g  -v /data/jwang/datasets/datar:/media/student/datar -v /data/jwang/datasets/datarad:/media/student/datarad -v $PWD/samples:/workspace/samples   -v $PWD/outputs:/workspace/outputs -v $PWD:/workspace --name deeplabseg jwang3vsu/parking-seg:cuda12.1  bash
