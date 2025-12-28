@@ -1,3 +1,6 @@
+backbone:
+	locally defined segformer backbone
+
 train input: radar range_angle npy
 training gt: semantic segmentation mask (human labeled or predicted by segformer) 
 

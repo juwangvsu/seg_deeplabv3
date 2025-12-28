@@ -1,4 +1,5 @@
-
+backbone:
+	use hf SegformerForSemanticSegmentation class
 # Radar-based Semantic Segmentation (SegFormer backbone)
 
 This mini-repo contains:
