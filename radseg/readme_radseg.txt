@@ -4,6 +4,7 @@ backbone:
 train input: radar range_angle npy
 training gt: semantic segmentation mask (human labeled or predicted by segformer) 
 
+-------------10/26/25 --------------------------
 gpu1:
 
 deeplabseg2
