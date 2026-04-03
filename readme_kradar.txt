@@ -1,8 +1,33 @@
+
+---------4/2/26 code repo ---------------------
+alien3, i9ub22, gpuhead2
+
+----- 4/2/26 dataset ---------------------------
 alien3:
 ~/Documents/datasets/k-radar/
 https://github.com/kaist-avelab/K-Radar.git
 
+i9ub22:
+~/gpudata/jwang/datasets/k-radar
+pguhead2:
+/data/jwang/datasets/k-radar/RadarTensor
+   rdr_polar_3d/*.zip: (2, 256, 107, 37) npy files for all sequence, converted from raw data
+   from_rdr_polar_3d/
+   from_rdr_cube_xyz/
+   polar3d_bev/
+        samples local converted to png from rdr_polar_3d data
+
+raw data from:
+	/home/student/Documents/datasets/k-radar/1/radar_tesseract/tesseract_00012.mat
+
+	k-radar/RadarTensor/:  processed data from the raw data, avia google share
+			rdr_polar_3d/: (2, 256, 107, 37), ch 1 avg pw, ch2 avg doppler
+
+	unfortunately only seq 1, 58 raw data avialabe at google share
+
 (kradar) student@alien3:~/Documents/K-Radar$ python datasets/kradar_detection_v2_1.py 
+	input: /home/student/Documents/datasets/k-radar/1/radar_tesseract/tesseract_00012.mat
+		
 	generate: ~/Documents/datasets/k-radar/RadarTensor/rdr_polar_3d/new_all/1/*.npy
 	raw power, wide range, normalized by e11,
 
@@ -10,7 +35,6 @@ https://github.com/kaist-avelab/K-Radar.git
 
 	get_cube_polar take non static slices: tesseract = dict_item['tesseract'][1:,:,:,:]/normalizer
 	so non-moving object radar return is kind of filtered?
-
 
 
 ------- polar (range-angle) bev from drea -------------------
@@ -28,9 +52,14 @@ Saved BEV image to: /tmp/cube_00012_bev.png, arr_zyx.shape (150, 400, 250) arr_z
 
 ----------- polar 3d data -----------
 (kradar) student@alien3:~/Documents/K-Radar$ python radar_rdr_polar.py --polar_file ~/Documents/datasets/k-radar/RadarTensor/rdr_polar_3d/new_all/1
-	convert npy power measure to png image, use_log=True, otherwise signal range too wide and you only see the strongest return.
+
+	convert polar3d_00624.npy power measure to png image, use_log=True, otherwise signal range too wide and you only see the strongest return.
+	mv polar3d*.png polar3d_bev/
+	eog polar3d_bev/polar3d_00065_63_bev.png
+	new_all/1/: regenerated from raw tensor, add individual file per dopplar channel.
 
 /Documents/datasets/k-radar/RadarTensor/rdr_polar_3d/1
 (2, 256, 107, 37)
 first 256,107,37): pw measure over rae but only take radar return from moving object. see datasets/kradar_detection_v2_1.py
-eog polar3d_00319_bev.png
+ polar3d_00319_bev.png
+

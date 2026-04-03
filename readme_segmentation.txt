@@ -44,6 +44,14 @@ current:
 
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
+-----------3/30/26 retest radseg ---------------------------
+deeplabseg@gpu1:
+
+data access from alien3 via sshfs:
+	alien3:~/gpudata
+	sshfs gputest@gpuhead:/data gpudata
+	eog ~/gpudata/jwang/Documents/seg_deeplabv3/radseg/checkpoints/preds_eval/000372_overlay.png
+	
 -----------10/24/25 radseg ---------------------------
 use radar only for segmentation
 Epoch 001: loss=1.4223 acc=0.7474 miou=0.1052
