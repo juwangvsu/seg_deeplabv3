@@ -41,9 +41,33 @@ current:
 	   python3 segformer_pvtv2_min/train.py --config segformer_pvtv2_min/config_city.yml --encoder pvt_v2_b2 [--load outputs_segformref_city/segformer_local.pth] 
 
 
-
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
+-----------4/3/26 retest rad_segformer ---------------------------
+
+eval/infer outputs:
+	cp to /media/student/datar/radarstuff/20190813_scorp_dataset/outputs/
+	
+view outputs from i9:
+	student@i9ub22:~/gpudata/jwang/datasets$ eog datar/radarstuff/20190813_scorp_dataset/outputs/radar_b2_retest/infer_outputs/overlay/000123.png 
+
+-----------4/3/26 recap generate gt dataset ---------------------------
+deeplabseg@gpu1:
+
+(gt)radar_scorp:
+	python3 test_seg4.py --data_dir data/radar_scorp --out_dir outputs/segformer/radar_scorp2
+
+(gt)k-radar:
+	data prep:
+		python3 crop_left.py /data/jwang/datasets/k-radar/18/
+		this generate cam-front-left/
+	python3 test_seg4.py --data_dir /media/student/datar/k-radar/18/cam-front-left  --out_dir outputs/segformer/k-radar-18
+
+test_seg4.py use stock segformer to generate segmentation mask
+
+generated:
+	radar_scorp/masks/ (9/27/25 note)
+	
 -----------3/30/26 retest radseg ---------------------------
 deeplabseg@gpu1:
 

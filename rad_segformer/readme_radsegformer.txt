@@ -16,6 +16,8 @@ data_dir/
   images/*.png|*.jpg           # optional RGB (for overlays)
 ```
 
+---------------4/3/26 rad_segformer test train using k-radar--------------
+
 ---------------10/27/25 rad_segformer --------------------
 @gpu1:
 Train:

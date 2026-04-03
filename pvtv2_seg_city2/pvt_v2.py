@@ -201,11 +201,18 @@ class SegHeadLite(nn.Module):
         self.smooth = ConvBNAct(width, width, 3, 1, 1)
     def forward(self, feats: list, input_size: Tuple[int,int]):
         f2, f3, f4, f5 = feats
+        print(f"f2.shape {f2.shape}, f3.shape {f3.shape} f4.shape {f4.shape} f5.shape {f5.shape}")
         h, w = f2.shape[-2:]
         p2 = self.l2(f2)
-        p3 = F.interpolate(self.l3(f3), size=(h,w), mode="bilinear", align_corners=False)
-        p4 = F.interpolate(self.l4(f4), size=(h,w), mode="bilinear", align_corners=False)
-        p5 = F.interpolate(self.l5(f5), size=(h,w), mode="bilinear", align_corners=False)
+        p3 = self.l3(f3)
+        p4 = self.l4(f4)
+        p5 = self.l5(f5)
+        print(f"p2.shape {p2.shape}, .shape {p3.shape} 4.shape {p4.shape} 5.shape {p5.shape}")
+        p3 = F.interpolate(p3, size=(h,w), mode="bilinear", align_corners=False)
+
+        p4 = F.interpolate(p4, size=(h,w), mode="bilinear", align_corners=False)
+        p5 = F.interpolate(p5, size=(h,w), mode="bilinear", align_corners=False)
+
         x = self.smooth(p2 + p3 + p4 + p5)
         logits = self.cls(x)
         rst= F.interpolate(logits, size=input_size, mode="bilinear", align_corners=False)
