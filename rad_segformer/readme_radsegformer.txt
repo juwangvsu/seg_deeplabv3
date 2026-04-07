@@ -16,8 +16,15 @@ data_dir/
   images/*.png|*.jpg           # optional RGB (for overlays)
 ```
 
----------------4/3/26 rad_segformer test train using k-radar--------------
+---------------4/6/26 rad_segformer test train using k-radar--------------
 
+deeplabseg@gpu1:
+Train:
+cd rad_segformer
+python3 train_eval_infer.py   --data-dir ../data/k-radar/   --num-classes 19   --mode train   --epochs 50   --batch-size 8   --image-size 512   --save-every 2   --ckpt-dir checkpoints/k-radar_b2   --out-dir outputs/k-radar_b2
+
+data-dir:
+	masks, angle_range_numpy
 ---------------10/27/25 rad_segformer --------------------
 @gpu1:
 Train:

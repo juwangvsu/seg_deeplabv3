@@ -1,4 +1,17 @@
 
+---------------4/7/26 radar_corp data ----------------
+/data/jwang/datasets/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36/angle_range_numpy
+
+>>> x.shape
+(128, 256)
+>>> np.max(x)
+np.float32(103528.86)
+>>> np.min(x)
+np.float32(36.0052)
+
+/data/jwang/Documents/K-Radar$ python3 radar_rdr_polar.py --polar_file /data/jwang/datasets/k-radar/18/rdr_polar_3d
+	converting rdr_polar_3d 3d npy to bev npy and save to angle_range_numpy/, needed by the training script of rad_segformer/
+
 ---------4/2/26 code repo ---------------------
 alien3, i9ub22, gpuhead2
 
@@ -53,8 +66,9 @@ Saved BEV image to: /tmp/cube_00012_bev.png, arr_zyx.shape (150, 400, 250) arr_z
 ----------- polar 3d data -----------
 (kradar) student@alien3:~/Documents/K-Radar$ python radar_rdr_polar.py --polar_file ~/Documents/datasets/k-radar/RadarTensor/rdr_polar_3d/new_all/1
 
-	convert polar3d_00624.npy power measure to png image, use_log=True, otherwise signal range too wide and you only see the strongest return.
-	mv polar3d*.png polar3d_bev/
+	computer  polar3d_00624.npy avg power measure to png image and bev npy, use_log=True, otherwise signal range too wide and you only see the strongest return.
+	output: angle_range_png/ angle_range_numpy/
+	mv angle_range_png/polar3d*.png polar3d_bev/
 	eog polar3d_bev/polar3d_00065_63_bev.png
 	new_all/1/: regenerated from raw tensor, add individual file per dopplar channel.
 

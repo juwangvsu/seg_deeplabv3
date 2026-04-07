@@ -51,7 +51,7 @@ eval/infer outputs:
 view outputs from i9:
 	student@i9ub22:~/gpudata/jwang/datasets$ eog datar/radarstuff/20190813_scorp_dataset/outputs/radar_b2_retest/infer_outputs/overlay/000123.png 
 
------------4/3/26 recap generate gt dataset ---------------------------
+-----------4/3,6/26 recap generate gt dataset ---------------------------
 deeplabseg@gpu1:
 
 (gt)radar_scorp:
@@ -61,7 +61,8 @@ deeplabseg@gpu1:
 	data prep:
 		python3 crop_left.py /data/jwang/datasets/k-radar/18/
 		this generate cam-front-left/
-	python3 test_seg4.py --data_dir /media/student/datar/k-radar/18/cam-front-left  --out_dir outputs/segformer/k-radar-18
+	python3 test_seg4.py --data_dir /media/student/datar/k-radar/18/cam-front-left  --out_dir /media/student/datar/k-radar/18/segformer/k-radar-18
+		colored_masks, masks, overlay
 
 test_seg4.py use stock segformer to generate segmentation mask
 
