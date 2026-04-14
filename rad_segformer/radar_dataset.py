@@ -60,6 +60,7 @@ class RadarSegDataset(Dataset):
     """
     def __init__(self,
                  data_dir: str,
+                 radar_subdir: str = 'angle_range_numpy',
                  image_size: Tuple[int, int] = (512, 512),
                  percent_clip: Tuple[float, float] = (1.0, 99.0),
                  file_stems: Optional[List[str]] = None):
@@ -68,7 +69,7 @@ class RadarSegDataset(Dataset):
         self.image_size = image_size
         self.percent_clip = percent_clip
 
-        npy_dir = os.path.join(data_dir, 'angle_range_numpy')
+        npy_dir = os.path.join(data_dir, radar_subdir)
         mask_dir = os.path.join(data_dir, 'masks')
         self.img_dir = os.path.join(data_dir, 'images')  # optional
 

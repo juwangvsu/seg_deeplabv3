@@ -16,6 +16,7 @@ from utils_io import ensure_dir, save_checkpoint, load_checkpoint, save_pred_ima
 def get_args():
     p = argparse.ArgumentParser(description='Radar SegFormer Training / Eval / Infer')
     p.add_argument('--data-dir', type=str, required=True)
+    p.add_argument('--radar-subdir', type=str, default='angle_range_numpy')
     p.add_argument('--out-dir', type=str, default='outputs')
     p.add_argument('--ckpt-dir', type=str, default='checkpoints')
     p.add_argument('--load', type=str, default=None, help='Checkpoint filename inside ckpt-dir (e.g., best.pt or epoch_0009.pt)')
@@ -38,8 +39,8 @@ def get_args():
     p.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu')
     return p.parse_args()
 
-def make_loaders(data_dir: str, image_size: int, batch_size: int, num_workers: int, val_split: float):
-    ds = RadarSegDataset(data_dir=data_dir, image_size=(image_size, image_size))
+def make_loaders(data_dir: str, radar_subdir:str, image_size: int, batch_size: int, num_workers: int, val_split: float):
+    ds = RadarSegDataset(data_dir=data_dir, radar_subdir=radar_subdir, image_size=(image_size, image_size))
     n_val = max(1, int(len(ds) * val_split))
     n_train = len(ds) - n_val
     train_ds, val_ds = random_split(ds, [n_train, n_val], generator=torch.Generator().manual_seed(42))
@@ -78,7 +79,7 @@ def evaluate(model: torch.nn.Module, loader: DataLoader, device: str, num_classe
 
 def train(args):
     device = args.device
-    train_ld, val_ld = make_loaders(args.data_dir, args.image_size, args.batch_size, args.num_workers, args.val_split)
+    train_ld, val_ld = make_loaders(args.data_dir, args.radar_subdir, args.image_size, args.batch_size, args.num_workers, args.val_split)
 
     model = RadarSegFormer(num_classes=args.num_classes, variant=args.variant, image_size=args.image_size)
     model.to(device)
@@ -151,9 +152,9 @@ def run_infer(args):
     if args.input_file is not None:
         import os
         stem = os.path.splitext(os.path.basename(args.input_file))[0]
-        ds = RadarSegDataset(args.data_dir, image_size=(args.image_size, args.image_size), file_stems=[stem])
+        ds = RadarSegDataset(args.data_dir, args.radar_subdir, image_size=(args.image_size, args.image_size), file_stems=[stem])
     else:
-        ds = RadarSegDataset(args.data_dir, image_size=(args.image_size, args.image_size))
+        ds = RadarSegDataset(args.data_dir, args.radar_subdir, image_size=(args.image_size, args.image_size))
 
     ld = torch.utils.data.DataLoader(ds, batch_size=1, shuffle=False)
 

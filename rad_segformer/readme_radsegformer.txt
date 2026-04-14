@@ -21,10 +21,16 @@ data_dir/
 deeplabseg@gpu1:
 Train:
 cd rad_segformer
-python3 train_eval_infer.py   --data-dir ../data/k-radar/   --num-classes 19   --mode train   --epochs 50   --batch-size 8   --image-size 512   --save-every 2   --ckpt-dir checkpoints/k-radar_b2   --out-dir outputs/k-radar_b2
+python3 train_eval_infer.py   --data-dir ../data/k-radar/  --radar-subdir angle_range_numpy_log --num-classes 19   --mode train   --epochs 50   --batch-size 8   --image-size 512   --save-every 2   --ckpt-dir checkpoints/k-radar_b2   --out-dir outputs/k-radar_b2
+
+eval:
+
+python3 train_eval_infer.py   --data-dir ../data/k-radar --radar-subdir angle_range_numpy_log   --num-classes 19   --mode eval   --load best.pt   --ckpt-dir checkpoints/radar_b2   --save-output   --out-dir outputs/radar_b2
 
 data-dir:
-	masks, angle_range_numpy
+	requires:
+		masks, angle_range_numpy
+	see readme_kradar.txt for data prepare
 ---------------10/27/25 rad_segformer --------------------
 @gpu1:
 Train:

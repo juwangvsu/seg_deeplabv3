@@ -43,6 +43,11 @@ current:
 
 	10/1/25 segformer process radarseg image, train deeplabv3		and compare result
 
+----4/14/26 test_seg4.py add model option -----------	
+
+--modelid 0 indoor
+	  1 cityscape
+
 -----------4/3/26 retest rad_segformer ---------------------------
 
 eval/infer outputs:
@@ -55,20 +60,20 @@ view outputs from i9:
 deeplabseg@gpu1:
 
 (gt)radar_scorp:
-	python3 test_seg4.py --data_dir data/radar_scorp --out_dir outputs/segformer/radar_scorp2
+	python3 test_seg4.py --data_dir data/radar_scorp --out_dir outputs/segformer/radar_scorp2 --modelid 1
 
 (gt)k-radar:
 	data prep:
 		python3 crop_left.py /data/jwang/datasets/k-radar/18/
 		this generate cam-front-left/
-	python3 test_seg4.py --data_dir /media/student/datar/k-radar/18/cam-front-left  --out_dir /media/student/datar/k-radar/18/segformer/k-radar-18
+	python3 test_seg4.py --data_dir /media/student/datar/k-radar/18/cam-front-left  --out_dir /media/student/datar/k-radar/18/segformer/k-radar-18 --modelid 1
 		colored_masks, masks, overlay
 
 test_seg4.py use stock segformer to generate segmentation mask
 
 generated:
 	radar_scorp/masks/ (9/27/25 note)
-	
+
 -----------3/30/26 retest radseg ---------------------------
 deeplabseg@gpu1:
 
@@ -230,7 +235,7 @@ test_seg4.py:
 	pretrained weights city scrape
 segformer pretrained model (cityscrape) generate mask as gt to train
 deeplabv3 model:
-   58  python3 test_seg4.py --data_dir data/apgdata --out_dir outputs/segformer_city
+   58  python3 test_seg4.py --data_dir data/apgdata --out_dir outputs/segformer_city --modelid 1
    59  python3 verify_label.py --masks outputs/segformer_city/masks/
  2032  eog outputs/segformer_city/overlay/000361_overlay.png 
  2033  sudo rm data/apgdata/masks/* -f
@@ -259,9 +264,9 @@ use pretrained model:
 	python3 verify_label.py --masks data/apgdata/masks
 
 segformer:
-       (sgf1) python3 test_seg4.py --data_dir  /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36 --out_dir outputs/segformer/radar_scorp2 --device cuda
+       (sgf1) python3 test_seg4.py --data_dir  /media/student/datar/radarstuff/20190813_scorp_dataset/20190813_icmim_dataset/2019-08-13-14-04-36 --out_dir outputs/segformer/radar_scorp2 --device cuda --modelid 1
 
-        python3 test_seg4.py --data_dir data/apgdata --out_dir outputs/segformer
+        python3 test_seg4.py --data_dir data/apgdata --out_dir outputs/segformer --modelid 1
 		assume images under data_dir
         	use nvidia/segformer-b0-finetuned-ade-512-512 not deeplabv3.
 		result saved in 

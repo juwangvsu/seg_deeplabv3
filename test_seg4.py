@@ -43,6 +43,7 @@ def load_labels(model) -> List[str]:
     else:
         num_labels = getattr(model.config, "num_labels", 150)
         labels = [f"class_{i}" for i in range(num_labels)]
+    print(f"model labels {labels}")
     return labels
 
 
@@ -132,7 +133,7 @@ def segment_one(
     print(f"    colored mask: {colored_out}")
     print(f"    raw mask:     {mask_out}")
 
-
+segformer_model_names=['nvidia/segformer-b5-finetuned-ade-640-640', 'nvidia/segformer-b5-finetuned-cityscapes-1024-1024']
 def main():
     p = argparse.ArgumentParser(
         description="Batch semantic segmentation (HF Transformers) with labeled overlays and raw masks."
@@ -140,9 +141,9 @@ def main():
     p.add_argument("--data_dir", required=True, help="Data root dir containing an 'images' subfolder.")
     p.add_argument("--out_dir", default="outputs/segformer", help="Data dir output subfolder.")
     p.add_argument("--input", default="", help="Optional single image name or path. If omitted, process all images in <data_dir>/images.")
+    p.add_argument("--modelid", type=int, required=True, help="HF model repo id 0: semantic segmentation indoor warehouse. 1 road cityscape")
     #p.add_argument("--model", default="nvidia/segformer-b0-finetuned-ade-512-512",
-    p.add_argument("--model", default="nvidia/segformer-b5-finetuned-cityscapes-1024-1024",
-                   help="HF model repo id for semantic segmentation.")
+    #p.add_argument("--model", default="nvidia/segformer-b5-finetuned-cityscapes-1024-1024", help="HF model repo id for road semantic segmentation.")
     p.add_argument("--alpha", type=float, default=0.5, help="Overlay alpha ∈ [0,1].")
     p.add_argument("--max-legend", type=int, default=25, help="Max classes listed in legend.")
     p.add_argument("--device", default="", help='Force "cuda" or "cpu". Default: auto.')
@@ -161,9 +162,9 @@ def main():
 
     dev = torch.device(args.device if args.device else ("cuda" if torch.cuda.is_available() else "cpu"))
 
-    print('xxx device ', dev)
-    processor = AutoImageProcessor.from_pretrained(args.model)
-    model = AutoModelForSemanticSegmentation.from_pretrained(args.model).to(dev).eval()
+    print('xxx device ', dev, 'model name', segformer_model_names[args.modelid])
+    processor = AutoImageProcessor.from_pretrained(segformer_model_names[args.modelid])
+    model = AutoModelForSemanticSegmentation.from_pretrained(segformer_model_names[args.modelid]).to(dev).eval()
     labels = load_labels(model)
 
     exts = ("*.png", "*.jpg", "*.jpeg", "*.bmp", "*.tif", "*.tiff")

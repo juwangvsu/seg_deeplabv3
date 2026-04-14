@@ -10,7 +10,12 @@ np.float32(103528.86)
 np.float32(36.0052)
 
 /data/jwang/Documents/K-Radar$ python3 radar_rdr_polar.py --polar_file /data/jwang/datasets/k-radar/18/rdr_polar_3d
-	converting rdr_polar_3d 3d npy to bev npy and save to angle_range_numpy/, needed by the training script of rad_segformer/
+	converting rdr_polar_3d 3d npy to bev npy and save to 
+	angle_range_numpy/, 
+	angle_range_numpy_log/, 
+	angle_range_png/, 
+	angle_range_png_log/, 
+	needed by the training script of rad_segformer/
 
 ---------4/2/26 code repo ---------------------
 alien3, i9ub22, gpuhead2
